@@ -1,0 +1,36 @@
+# Unity folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+*.csproj
+*.sln
+*.user
+*.userprefs
+
+# Rider
+.idea/
+
+
+# Unity cache
+*.pidb
+*.booproj
+*.svd
+
+# Crash reports
+sysinfo.txt
+
+# Blender backup
+*.blend1
+*.blend2
+*.blend@
