@@ -6,6 +6,7 @@
 [Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
+Assets/SceneDependencyCache/
 
 # OS files
 .DS_Store
@@ -21,11 +22,11 @@ Thumbs.db
 # Rider
 .idea/
 
-
 # Unity cache
 *.pidb
 *.booproj
 *.svd
+*.unitycache
 
 # Crash reports
 sysinfo.txt
