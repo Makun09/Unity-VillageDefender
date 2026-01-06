@@ -20,7 +20,7 @@ namespace ECS.Systems
                          .WithAll<EnemyTag>())
             {
                 transform.ValueRW.Position +=
-                    new float3(0f, 0f, 1f) * speed.ValueRO.Value * dt;
+                    new float3(1f, 0f, 0f) * speed.ValueRO.Value * dt;
             }
         }
     }
