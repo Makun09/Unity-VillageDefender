@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class TowerPlacement : MonoBehaviour
@@ -6,13 +5,7 @@ public class TowerPlacement : MonoBehaviour
     [SerializeField] private Camera PlayerCamera;
     
     private GameObject CurrentPlacingTower;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void Update()
     {
         if (CurrentPlacingTower != null)
@@ -28,12 +21,19 @@ public class TowerPlacement : MonoBehaviour
             {
                 CurrentPlacingTower = null;
             }
-            
         }
     }
 
     public void SetTowerToPlace(GameObject tower)
     {
-        CurrentPlacingTower = Instantiate(tower, Vector3.zero, Quaternion.identity);
+        Ray camray = PlayerCamera.ScreenPointToRay(Input.mousePosition);
+        Vector3 spawnPos = Vector3.zero;
+
+        if(Physics.Raycast(camray, out RaycastHit hitInfo, 100f))
+        {
+            spawnPos = hitInfo.point;
+        }
+
+        CurrentPlacingTower = Instantiate(tower, spawnPos, Quaternion.identity);
     }
 }

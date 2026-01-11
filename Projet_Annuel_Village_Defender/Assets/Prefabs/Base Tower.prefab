@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1570211042640845823}
   - component: {fileID: 5013033789461831699}
   - component: {fileID: 7382597799055332427}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Base Tower
   m_TagString: CantPlace
   m_Icon: {fileID: 0}
@@ -66,7 +66,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 2.5, y: 2.32, z: 1}
-  m_Center: {x: 0.51, y: 1.45, z: 0}
+  m_Center: {x: 0.51, y: 1.54, z: 0}
 --- !u!1 &1907449857901752345
 GameObject:
   m_ObjectHideFlags: 0
@@ -79,7 +79,7 @@ GameObject:
   - component: {fileID: 5792358615156047829}
   - component: {fileID: 2616529456194390339}
   - component: {fileID: 2904130127807801917}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 561576405055070437}
   - component: {fileID: 3673100872859521269}
   - component: {fileID: 3574212064554247025}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
