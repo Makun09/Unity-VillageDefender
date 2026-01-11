@@ -7,6 +7,7 @@ namespace LP.SpawnTower
     public class SpawnTower : MonoBehaviour
     {
         [SerializeField] GameObject towerPrefab = null;
+        [SerializeField] int towerPrice = 10;
         [SerializeField] float minSurfaceAngle = 0.8f;
 
         private Camera cam = null;
@@ -25,17 +26,15 @@ namespace LP.SpawnTower
         public void SelectThis()
         {
             activeSpawner = this;
-            Debug.Log($"Tour sélectionnée : {towerPrefab.name}");
+            Debug.Log($"Tour sélectionnée : {towerPrefab.name} - Prix : {towerPrice}");
         }
 
         private void SpawnAtMousePos()
         {
-            // Vérifier si ce spawner est actif
             if (activeSpawner != this) return;
 
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
-                // Vérifier si le clic est sur un bouton UI
                 if (EventSystem.current.IsPointerOverGameObject())
                 {
                     return;
@@ -49,7 +48,15 @@ namespace LP.SpawnTower
                     {
                         if (Vector3.Dot(hit.normal, Vector3.up) > minSurfaceAngle)
                         {
-                            Instantiate(towerPrefab, hit.point, Quaternion.identity);
+                            // Vérifier si on a assez d'argent
+                            if (PlayerStats.TrySpendMoney(towerPrice))
+                            {
+                                Instantiate(towerPrefab, hit.point, Quaternion.identity);
+                            }
+                            else
+                            {
+                                Debug.Log("Pas assez d'argent !");
+                            }
                         }
                     }
                 }
