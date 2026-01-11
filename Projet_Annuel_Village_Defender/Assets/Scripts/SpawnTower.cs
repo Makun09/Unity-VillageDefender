@@ -28,11 +28,14 @@ namespace LP.SpawnTower
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit))
                 {
-                    Instantiate(towerPrefab, hit.point, Quaternion.identity);
+                    // Vérifier si on peut placer une tour à cet endroit
+                    if (hit.collider.CompareTag("CanPlace") && !hit.collider.CompareTag("CantPlace"))
+                    {
+                        Instantiate(towerPrefab, hit.point, Quaternion.identity);
+                    }
                 }
             }
         }
-        
+
     }
 }
-
