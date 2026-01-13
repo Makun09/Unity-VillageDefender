@@ -1,54 +1,57 @@
-﻿using ECS.Authoring;
-using ECS.Components;
+﻿using ECS.Components;
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
 
 namespace ECS.Systems
 {
     [BurstCompile]
-    [UpdateAfter(typeof(SpawnGoblinSystem))]
-    public partial struct GoblinRiseSystem : ISystem
+    [UpdateAfter(typeof(GoblinRiseSystem))]
+    public partial struct GoblinWalkSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            
+
         }
 
         [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
-            
+
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            var deltaTime = SystemAPI.Time.DeltaTime;
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
-            new GoblinRiseSystemJob
+            var deltaTime = SystemAPI.Time.DeltaTime;
+            //var targetEntity = SystemAPI.GetSingletonEntity<TowerTag>(); // Example target entity if needed
+            
+            new GoblinWalkJob
             {
                 DeltaTime = deltaTime,
+                StopDistance = 5.5f * 5.5f,
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter(),
             }.ScheduleParallel();
         }
     }
 
     [BurstCompile]
-    public partial struct GoblinRiseSystemJob : IJobEntity
+    public partial struct GoblinWalkJob : IJobEntity
     {
         public float DeltaTime;
+        public float StopDistance;
         public EntityCommandBuffer.ParallelWriter ECB;
+        
         [BurstCompile]
-        private void Execute(GoblinRiseAspect goblin,[EntityIndexInQuery]int SortKey)
+        private void Execute(GoblinWalkAspect goblin, [EntityIndexInQuery] int SortKey)
         {
-            goblin.Rise(DeltaTime);
-            if(!goblin.IsAboveGround) return;
-            
-            goblin.SetAtGroundLevel();
-            ECB.RemoveComponent<GoblinRiseRate>(SortKey, goblin.Entity);
-            ECB.SetComponentEnabled<GoblinWalkProperties>(SortKey, goblin.Entity, true);
-            
+            goblin.Walk(DeltaTime);
+            if (goblin.IsInStoppingRange(float3.zero, StopDistance))
+            {
+                ECB.SetComponentEnabled<GoblinWalkProperties>(SortKey, goblin.Entity, false);
+            }
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using ECS.Components;
+using UnityEngine;
 
 namespace ECS.Authoring
 {
     public class Goblin : MonoBehaviour
     {
         public float RiseRate;
+        public float WalkSpeed;
     }
     
     public class GoblinBaker : Unity.Entities.Baker<Goblin>
@@ -16,6 +18,12 @@ namespace ECS.Authoring
             {
                 Value = authoring.RiseRate
             });
+            AddComponent(entity, new ECS.Components.GoblinWalkProperties
+            {
+                WalkSpeed = authoring.WalkSpeed
+            });
+            AddComponent<GoblinHeading>();
+            AddComponent<NewGoblinTag>();
         }
     }
 }
