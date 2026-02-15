@@ -125,3 +125,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RiseRate: 0.5
   WalkSpeed: 0.5
+  Target: {fileID: 0}

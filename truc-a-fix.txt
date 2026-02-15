@@ -1,0 +1,1 @@
+- les ennemies ne spawn pas sur les spawnpoint spawn a gauche du spawner
