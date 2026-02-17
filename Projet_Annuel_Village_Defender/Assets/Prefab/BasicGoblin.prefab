@@ -123,6 +123,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4067092f17643488a6bd0c1ecc55270, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RiseRate: 0.5
-  WalkSpeed: 0.5
+  RiseRate: 2
+  WalkSpeed: 2
   Target: {fileID: 0}

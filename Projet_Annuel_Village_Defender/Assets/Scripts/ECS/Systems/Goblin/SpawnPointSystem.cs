@@ -29,16 +29,22 @@ namespace ECS.Systems
             var spawnZone = SystemAPI.GetAspect<SpawnZoneAspect>(spawnZoneEntity);
 
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            var spawnPoints = new NativeList<float3>(Allocator.Persistent);
-            var spawnPointOffset = new float3(0f, -2f, 0f); // Y négatif pour spawn sous terre (système rise), Z = 0 pour spawn exactement sur le spawner
+            var spawnPoints = new NativeList<GoblinSpawnData>(Allocator.Persistent);
+            const float undergroundOffset = 2f; // How far underground goblins spawn
 
             for (var i = 0; i < spawnZone.NumberSpawnPointToSpawn; i++)
             {
                 var newSpawnPoint = ecb.Instantiate(spawnZone.SpawnPointPrefab);
                 var newSpawnPointTransform = spawnZone.GetRandomSpawnPointTransform();
                 ecb.SetComponent(newSpawnPoint, newSpawnPointTransform);
-                var newGobelinSpawnPoint = newSpawnPointTransform.Position + spawnPointOffset;
-                spawnPoints.Add(newGobelinSpawnPoint);
+                
+                // Store spawn position (underground) and target height (ground level)
+                var spawnData = new GoblinSpawnData
+                {
+                    SpawnPosition = newSpawnPointTransform.Position + new float3(0f, -undergroundOffset, 0f),
+                    TargetHeight = newSpawnPointTransform.Position.y
+                };
+                spawnPoints.Add(spawnData);
             }
 
             spawnZone.GoblinSpawnPoints = spawnPoints.AsArray();

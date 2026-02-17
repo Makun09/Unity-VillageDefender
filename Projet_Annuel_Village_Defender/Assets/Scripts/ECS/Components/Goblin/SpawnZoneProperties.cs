@@ -10,6 +10,7 @@ namespace ECS.Components
         public Entity EnemySpawnPrefab;
         public Entity BasicGoblinPrefab;
         public float GoblinSpawnRate;
+        public float GoblinRiseRate;
     }
 
     public struct GoblinSpawnTimer : IComponentData

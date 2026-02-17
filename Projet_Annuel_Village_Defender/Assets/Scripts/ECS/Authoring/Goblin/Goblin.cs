@@ -5,9 +5,9 @@ namespace ECS.Authoring
 {
     public class Goblin : MonoBehaviour
     {
-        public float RiseRate;
-        public float WalkSpeed;
-        public Transform Target;
+        public float riseRate;
+        public float walkSpeed;
+        public Transform target;
     }
     
     public class GoblinBaker : Unity.Entities.Baker<Goblin>
@@ -17,11 +17,11 @@ namespace ECS.Authoring
             var entity = GetEntity(Unity.Entities.TransformUsageFlags.Dynamic);
             AddComponent(entity, new ECS.Components.GoblinRiseRate
             {
-                Value = authoring.RiseRate
+                Value = authoring.riseRate
             });
             AddComponent(entity, new ECS.Components.GoblinWalkProperties
             {
-                WalkSpeed = authoring.WalkSpeed
+                WalkSpeed = authoring.walkSpeed
             });
             AddComponent<GoblinHeading>();
             AddComponent<NewGoblinTag>();

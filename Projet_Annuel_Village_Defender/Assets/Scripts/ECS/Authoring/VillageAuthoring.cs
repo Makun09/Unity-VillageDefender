@@ -1,13 +1,10 @@
 ﻿using ECS.Components;
+using ECS.Components.Tower;
 using Unity.Entities;
 using UnityEngine;
 
 namespace ECS.Authoring
 {
-    /// <summary>
-    /// Authoring component to mark a GameObject as the village (target for enemies)
-    /// Add this component to your village GameObject in the Unity editor
-    /// </summary>
     public class VillageAuthoring : MonoBehaviour
     {
     }
@@ -18,6 +15,7 @@ namespace ECS.Authoring
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent<VillageTag>(entity);
+            AddComponent<TowerTag>(entity);
         }
     }
 }

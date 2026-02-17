@@ -1,5 +1,4 @@
 ﻿using ECS.Components;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
@@ -15,9 +14,10 @@ namespace ECS.Authoring
         public uint RandomSeed;
         public GameObject BasicGoblinPrefab;
         public float GoblinSpawnRate = 2f;
+        public float GoblinRiseRate = 1f;
     }
     
-    public class SpawnZoneBaker : Baker <SpawnZone>
+    public class SpawnZoneBaker : Baker<SpawnZone>
     {
         public override void Bake(SpawnZone authoring)
         {
@@ -28,7 +28,8 @@ namespace ECS.Authoring
                 NumberSpawnPoints = authoring.NumberSpawnPoints,
                 EnemySpawnPrefab = GetEntity(authoring.SpawnPrefab, TransformUsageFlags.Dynamic),
                 BasicGoblinPrefab = GetEntity(authoring.BasicGoblinPrefab, TransformUsageFlags.Dynamic),
-                GoblinSpawnRate = authoring.GoblinSpawnRate
+                GoblinSpawnRate = authoring.GoblinSpawnRate,
+                GoblinRiseRate = authoring.GoblinRiseRate
             });
             AddComponent(entity, new SpawnZoneRandom
             {

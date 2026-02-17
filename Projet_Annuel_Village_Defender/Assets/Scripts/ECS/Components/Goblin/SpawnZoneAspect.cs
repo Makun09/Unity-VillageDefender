@@ -22,7 +22,7 @@ namespace ECS.Components
         public int NumberSpawnPointToSpawn => _spawnZoneProperties.ValueRO.NumberSpawnPoints;
         public Entity SpawnPointPrefab => _spawnZoneProperties.ValueRO.EnemySpawnPrefab;
 
-        public NativeArray<float3> GoblinSpawnPoints
+        public NativeArray<GoblinSpawnData> GoblinSpawnPoints
         {
             get => _goblinSpawnPoints.ValueRW.Value;
             set => _goblinSpawnPoints.ValueRW.Value = value;
@@ -74,16 +74,16 @@ namespace ECS.Components
         
         public LocalTransform GetGoblinSpawnPoint()
         {
-            var position = GetRandomGoblinSpawnPoint();
+            var spawnData = GetRandomGoblinSpawnData();
             return new LocalTransform
             {
-                Position = position,
-                Rotation = quaternion.RotateY(MathHelpers.GetHeading(position, _transform.ValueRO.Position)),
+                Position = spawnData.SpawnPosition,
+                Rotation = quaternion.RotateY(MathHelpers.GetHeading(spawnData.SpawnPosition, _transform.ValueRO.Position)),
                 Scale = 1f
             };
         }
 
-        private float3 GetRandomGoblinSpawnPoint()
+        private GoblinSpawnData GetRandomGoblinSpawnData()
         {
             return GoblinSpawnPoints[_spawnZoneRandom.ValueRW.Value.NextInt(0, GoblinSpawnPoints.Length)];
         }

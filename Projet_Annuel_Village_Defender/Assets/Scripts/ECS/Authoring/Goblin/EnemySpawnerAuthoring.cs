@@ -8,7 +8,7 @@ namespace ECS.Authoring
     public class EnemySpawnerAuthoring : MonoBehaviour
     {
         public GameObject enemyPrefab;
-        public float SpawnRate = 2f;
+        public float spawnRate = 2f;
 
         class Baker : Baker<EnemySpawnerAuthoring>
         {
@@ -19,7 +19,7 @@ namespace ECS.Authoring
                 AddComponent(entity, new EnemySpawner
                 {
                     EnemyPrefab = GetEntity(authoring.enemyPrefab, TransformUsageFlags.Dynamic),
-                    SpawnRate =  authoring.SpawnRate,
+                    SpawnRate =  authoring.spawnRate,
                     Timer =  0f,
                     SpawnPosition = authoring.transform.position
                 });

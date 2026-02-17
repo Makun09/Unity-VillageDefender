@@ -41,10 +41,10 @@ namespace ECS.Systems
         public float DeltaTime;
         public EntityCommandBuffer.ParallelWriter ECB;
         [ReadOnly]
-        public NativeArray<float3> GoblinSpawnPoints;
+        public NativeArray<GoblinSpawnData> GoblinSpawnPoints;
         public Entity SpawnZoneEntity;
 
-        private void Execute(in SpawnZoneProperties spawnZoneProperties, [EntityIndexInQuery] int entityIndexInQuery, RefRW<GoblinSpawnTimer> goblinSpawnTimer, RefRW<SpawnZoneRandom> spawnZoneRandom, RefRO<LocalTransform> transform)
+        private void Execute(in SpawnZoneProperties spawnZoneProperties, [EntityIndexInQuery] int entityIndexInQuery, RefRW<GoblinSpawnTimer> goblinSpawnTimer, RefRW<SpawnZoneRandom> spawnZoneRandom)
         {
             goblinSpawnTimer.ValueRW.Value -= DeltaTime;
             if (goblinSpawnTimer.ValueRW.Value > 0f) return;
@@ -54,15 +54,22 @@ namespace ECS.Systems
             var newGoblin = ECB.Instantiate(entityIndexInQuery, spawnZoneProperties.BasicGoblinPrefab);
 
             var spawnPointIndex = spawnZoneRandom.ValueRW.Value.NextInt(0, GoblinSpawnPoints.Length);
-            var spawnPosition = GoblinSpawnPoints[spawnPointIndex];
+            var spawnData = GoblinSpawnPoints[spawnPointIndex];
 
             var newGoblinTransform = new LocalTransform
             {
-                Position = spawnPosition,
+                Position = spawnData.SpawnPosition,
                 Rotation = quaternion.identity,
                 Scale = 1f
             };
             ECB.SetComponent(entityIndexInQuery, newGoblin, newGoblinTransform);
+            
+            // Set the target height for the rise system
+            ECB.SetComponent(entityIndexInQuery, newGoblin, new GoblinRiseRate
+            {
+                Value = spawnZoneProperties.GoblinRiseRate,
+                TargetHeight = spawnData.TargetHeight
+            });
         }
     }
 }
