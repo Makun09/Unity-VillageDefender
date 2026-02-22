@@ -8,13 +8,13 @@ namespace ECS.Authoring
 {
     public class SpawnZone : MonoBehaviour
     {
-        public float2 FieldDimensions;
-        public int NumberSpawnPoints;
-        public GameObject SpawnPrefab;
-        public uint RandomSeed;
-        public GameObject BasicGoblinPrefab;
-        public float GoblinSpawnRate = 2f;
-        public float GoblinRiseRate = 1f;
+        public float2 fieldDimensions;
+        public int numberSpawnPoints;
+        public GameObject spawnPrefab;
+        public uint randomSeed;
+        public GameObject basicGoblinPrefab;
+        public float goblinSpawnRate = 2f;
+        public float goblinRiseRate = 1f;
     }
     
     public class SpawnZoneBaker : Baker<SpawnZone>
@@ -24,16 +24,16 @@ namespace ECS.Authoring
             var entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new SpawnZoneProperties
             {
-                FieldDimensions = authoring.FieldDimensions,
-                NumberSpawnPoints = authoring.NumberSpawnPoints,
-                EnemySpawnPrefab = GetEntity(authoring.SpawnPrefab, TransformUsageFlags.Dynamic),
-                BasicGoblinPrefab = GetEntity(authoring.BasicGoblinPrefab, TransformUsageFlags.Dynamic),
-                GoblinSpawnRate = authoring.GoblinSpawnRate,
-                GoblinRiseRate = authoring.GoblinRiseRate
+                FieldDimensions = authoring.fieldDimensions,
+                NumberSpawnPoints = authoring.numberSpawnPoints,
+                EnemySpawnPrefab = GetEntity(authoring.spawnPrefab, TransformUsageFlags.Dynamic),
+                BasicGoblinPrefab = GetEntity(authoring.basicGoblinPrefab, TransformUsageFlags.Dynamic),
+                GoblinSpawnRate = authoring.goblinSpawnRate,
+                GoblinRiseRate = authoring.goblinRiseRate
             });
             AddComponent(entity, new SpawnZoneRandom
             {
-                Value = Random.CreateFromIndex(authoring.RandomSeed),
+                Value = Random.CreateFromIndex(authoring.randomSeed),
             });
             AddComponent<GoblinSpawnPoint>(entity);
             AddComponent<GoblinSpawnTimer>(entity);

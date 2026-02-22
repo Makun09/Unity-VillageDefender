@@ -18,7 +18,7 @@ namespace ECS.Components
         private readonly RefRW<GoblinSpawnPoint> _goblinSpawnPoints;
         private readonly RefRW<GoblinSpawnTimer> _goblinSpawnTimer;
         
-        private const float SAFETY_RADIUS = 100f;
+        private const float SafetyRadius = 100f;
         public int NumberSpawnPointToSpawn => _spawnZoneProperties.ValueRO.NumberSpawnPoints;
         public Entity SpawnPointPrefab => _spawnZoneProperties.ValueRO.EnemySpawnPrefab;
 
@@ -43,7 +43,7 @@ namespace ECS.Components
             do
             {
                 randomPosition = _spawnZoneRandom.ValueRW.Value.NextFloat3(MinCorner, MaxCorner);
-            }while (math.distancesq(_transform.ValueRO.Position,randomPosition) < SAFETY_RADIUS); // Ensure spawn point is not too close to center/village
+            }while (math.distancesq(_transform.ValueRO.Position,randomPosition) < SafetyRadius); // Ensure spawn point is not too close to center/village
             return randomPosition;
         }
 

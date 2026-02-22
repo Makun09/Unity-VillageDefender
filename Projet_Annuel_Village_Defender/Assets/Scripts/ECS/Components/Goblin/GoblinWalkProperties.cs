@@ -1,7 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
 
-namespace ECS.Components
+namespace ECS.Components.Goblin
 {
     public struct GoblinWalkProperties : IComponentData , IEnableableComponent
     {
@@ -12,6 +12,4 @@ namespace ECS.Components
     {
         public float3 Value;
     }
-    
-    public struct NewGoblinTag : IComponentData {}
 }

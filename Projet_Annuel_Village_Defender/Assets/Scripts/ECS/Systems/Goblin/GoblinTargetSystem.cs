@@ -1,56 +1,82 @@
 ﻿using ECS.Components;
+using ECS.Components.Goblin;
 using ECS.Components.Tower;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
+using Unity.Collections;
 
 namespace ECS.Systems
 {
     [BurstCompile]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
     [UpdateAfter(typeof(GoblinRiseSystem))]
     [UpdateBefore(typeof(GoblinWalkSystem))]
     public partial struct GoblinTargetSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            // Require the village to exist before running
             state.RequireForUpdate<TowerTag>();
             state.RequireForUpdate<VillageTag>();
+            state.RequireForUpdate<GoblinHeading>();
         }
 
-
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var towerQuery = SystemAPI.QueryBuilder().WithAll<TowerTag, LocalTransform>().Build();
+            var towerCount = towerQuery.CalculateEntityCount();
             
-            foreach (var (heading, transform) in SystemAPI.Query<RefRW<GoblinHeading>, RefRO<LocalTransform>>())
+            if (towerCount == 0)
             {
-                var goblinPosition = transform.ValueRO.Position;
-                float3 closestTower = float3.zero;
-                float distMin = float.MaxValue;
-
-                foreach (var towerTransform in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<TowerTag>())
-                {
-                    var towerPosition = towerTransform.ValueRO.Position;
-                    float distanceSq = math.distancesq(goblinPosition, towerPosition); // on calcul au carre pour optimiser car ba chiffre au carre si il est inferieur a autre truc au carre c inferieur aussi a autre truc en tant normal ca nous evite de faire une racine carree
-
-                    if (distanceSq < distMin)
-                    {
-                        distMin = distanceSq;
-                        closestTower = towerPosition;
-                    }
-                }
-
-                heading.ValueRW.Value = closestTower;
+                return;
             }
+            
+            var towerPositions = new NativeArray<float3>(towerCount, Allocator.TempJob);
+            
+            int index = 0;
+            foreach (var towerTransform in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<TowerTag>())
+            {
+                towerPositions[index] = towerTransform.ValueRO.Position;
+                index++;
+            }
+            
+            state.Dependency = new GoblinFindTargetJob
+            {
+                TowerPositions = towerPositions
+            }.ScheduleParallel(state.Dependency);
+            
+            towerPositions.Dispose(state.Dependency);
         }
 
-        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
+        }
+    }
+    
+    [BurstCompile]
+    public partial struct GoblinFindTargetJob : IJobEntity
+    {
+        [ReadOnly] public NativeArray<float3> TowerPositions;
+
+        public void Execute(ref GoblinHeading heading, in LocalTransform transform)
+        {
+            var goblinPosition = transform.Position;
+            float3 closestTower = TowerPositions[0];
+            float distMin = float.MaxValue;
+    
+            for (int i = 0; i < TowerPositions.Length; i++)
+            {
+                float distanceSq = math.distancesq(goblinPosition, TowerPositions[i]);
+        
+                if (distanceSq < distMin)
+                {
+                    distMin = distanceSq;
+                    closestTower = TowerPositions[i];
+                }
+            }
+    
+            heading.Value = closestTower;
         }
     }
 }

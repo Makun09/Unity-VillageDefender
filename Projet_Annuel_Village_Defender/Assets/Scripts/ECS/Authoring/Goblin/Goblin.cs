@@ -1,4 +1,5 @@
 ﻿using ECS.Components;
+using ECS.Components.Goblin;
 using UnityEngine;
 
 namespace ECS.Authoring
@@ -19,12 +20,12 @@ namespace ECS.Authoring
             {
                 Value = authoring.riseRate
             });
-            AddComponent(entity, new ECS.Components.GoblinWalkProperties
+            AddComponent(entity, new GoblinWalkProperties
             {
                 WalkSpeed = authoring.walkSpeed
             });
-            AddComponent<GoblinHeading>();
-            AddComponent<NewGoblinTag>();
+            SetComponentEnabled<GoblinWalkProperties>(entity, false); // Désactivé par défaut, sera activé après le Rise
+            AddComponent<GoblinHeading>(entity);
         }
     }
 }

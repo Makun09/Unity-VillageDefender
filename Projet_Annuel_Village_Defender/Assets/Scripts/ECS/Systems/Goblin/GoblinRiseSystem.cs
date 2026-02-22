@@ -1,5 +1,5 @@
-﻿using ECS.Authoring;
-using ECS.Components;
+﻿using ECS.Components;
+using ECS.Components.Goblin;
 using Unity.Burst;
 using Unity.Entities;
 
@@ -9,19 +9,15 @@ namespace ECS.Systems
     [UpdateAfter(typeof(SpawnGoblinSystem))]
     public partial struct GoblinRiseSystem : ISystem
     {
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            
+            state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
 
-        [BurstCompile]
         public void OnDestroy(ref SystemState state)
         {
-            
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var deltaTime = SystemAPI.Time.DeltaTime;
@@ -39,16 +35,19 @@ namespace ECS.Systems
     {
         public float DeltaTime;
         public EntityCommandBuffer.ParallelWriter ECB;
-        [BurstCompile]
-        private void Execute(GoblinRiseAspect goblin,[EntityIndexInQuery]int SortKey)
+        
+        private void Execute(GoblinRiseAspect goblin, [EntityIndexInQuery] int sortKey)
         {
             goblin.Rise(DeltaTime);
-            if(!goblin.IsAboveGround) return;
+            
+            if (!goblin.IsAboveGround)
+            {
+                return;
+            }
             
             goblin.SetAtGroundLevel();
-            ECB.RemoveComponent<GoblinRiseRate>(SortKey, goblin.Entity);
-            ECB.SetComponentEnabled<GoblinWalkProperties>(SortKey, goblin.Entity, true);
-            
+            ECB.RemoveComponent<GoblinRiseRate>(sortKey, goblin.Entity);
+            ECB.SetComponentEnabled<GoblinWalkProperties>(sortKey, goblin.Entity, true);
         }
     }
 }
