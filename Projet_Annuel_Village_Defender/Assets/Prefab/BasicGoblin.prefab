@@ -120,9 +120,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8191408512233993261}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4067092f17643488a6bd0c1ecc55270, type: 3}
+  m_Script: {fileID: 11500000, guid: 025ca341ab705cd4b8ce537ef04fa37a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RiseRate: 2
-  WalkSpeed: 2
-  Target: {fileID: 0}
+  riseRate: 2
+  walkSpeed: 5
+  hasTarget: 1
+  canWalk: 1
+  targetHeight: 5
