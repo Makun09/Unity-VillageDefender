@@ -145,18 +145,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1031919926}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a9834d3f5a44745bc6fbafce1ad7ea6, type: 3}
+  m_Script: {fileID: 11500000, guid: cb8dfa3d4d86920419b33be3d2b209e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FieldDimensions:
+  fieldDimensions:
     x: 40
     y: 40
-  NumberSpawnPoints: 100
-  SpawnPrefab: {fileID: 5075769038003374131, guid: 92ba2fdae6b3bc14c894ec9c079518b3, type: 3}
-  RandomSeed: 100
-  BasicGoblinPrefab: {fileID: 8191408512233993261, guid: c4f53c4ba5d210344910b339c823a499, type: 3}
-  GoblinSpawnRate: 3
-  GoblinRiseRate: 1
+  numberSpawnPoints: 5
+  spawnPrefab: {fileID: 5075769038003374131, guid: 92ba2fdae6b3bc14c894ec9c079518b3, type: 3}
+  randomSeed: 454545
+  basicGoblinPrefab: {fileID: 8191408512233993261, guid: c4f53c4ba5d210344910b339c823a499, type: 3}
+  goblinSpawnRate: 2
 --- !u!4 &1031919928
 Transform:
   m_ObjectHideFlags: 0
