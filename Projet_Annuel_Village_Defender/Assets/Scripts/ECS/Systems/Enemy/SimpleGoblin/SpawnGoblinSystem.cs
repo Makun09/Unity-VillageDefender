@@ -9,15 +9,21 @@ namespace ECS.Systems.Enemy.SimpleGoblin
 {
     public partial struct SpawnGoblinSystem : ISystem
     {
+        private ComponentLookup<GoblinRiseRate> _goblinRiseRateLookup;
+
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<SpawnZoneProperties>();
+            state.RequireForUpdate<BeginInitializationEntityCommandBufferSystem.Singleton>();
+            _goblinRiseRateLookup = state.GetComponentLookup<GoblinRiseRate>(true);
         }
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            _goblinRiseRateLookup.Update(ref state);
+
             var deltaTime = SystemAPI.Time.DeltaTime;
             var spawnZoneEntity = SystemAPI.GetSingletonEntity<SpawnZoneProperties>();
             var spawnZone = SystemAPI.GetAspect<SpawnZoneAspect>(spawnZoneEntity);
@@ -31,7 +37,7 @@ namespace ECS.Systems.Enemy.SimpleGoblin
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter(),
                 GoblinSpawnPoints = spawnZone.GoblinSpawnPoints,
                 SpawnZoneEntity = spawnZoneEntity,
-                GoblinRiseRateLookup = state.GetComponentLookup<GoblinRiseRate>(true)
+                GoblinRiseRateLookup = _goblinRiseRateLookup
             }.ScheduleParallel();
         }
     }
