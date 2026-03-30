@@ -1,10 +1,10 @@
-﻿using ECS.Components;
+﻿using ECS.Components.Enemy.SimpleGoblin;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace ECS.Systems
+namespace ECS.Systems.Enemy.SimpleGoblin
 {
     [BurstCompile]
     [UpdateInGroup(typeof(InitializationSystemGroup))]

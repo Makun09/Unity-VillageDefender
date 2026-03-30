@@ -1,7 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
 
-namespace ECS.Components.Goblin
+namespace ECS.Components.Enemy.AgressiveGoblin
 {
     public struct GoblinWalkProperties : IComponentData , IEnableableComponent
     {

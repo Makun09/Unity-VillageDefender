@@ -1,11 +1,9 @@
-﻿using ECS.Helpers;
-using Unity.Collections;
+﻿using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
-namespace ECS.Components
+namespace ECS.Components.Enemy.SimpleGoblin
 {
     public readonly partial struct SpawnZoneAspect : IAspect
     {

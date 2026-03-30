@@ -2,7 +2,7 @@
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace ECS.Components
+namespace ECS.Components.Enemy.SimpleGoblin
 {
     public readonly partial struct GoblinRiseAspect : IAspect
     {

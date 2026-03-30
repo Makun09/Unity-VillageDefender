@@ -1,11 +1,11 @@
-﻿using ECS.Components;
+﻿using ECS.Components.Enemy.SimpleGoblin;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace ECS.Systems
+namespace ECS.Systems.Enemy.SimpleGoblin
 {
     public partial struct SpawnGoblinSystem : ISystem
     {

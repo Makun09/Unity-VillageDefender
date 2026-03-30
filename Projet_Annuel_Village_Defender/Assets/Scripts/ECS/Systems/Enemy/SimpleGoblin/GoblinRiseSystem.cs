@@ -1,5 +1,5 @@
-﻿using ECS.Components;
-using ECS.Components.Goblin;
+﻿using ECS.Components.Enemy.AgressiveGoblin;
+using ECS.Components.Enemy.SimpleGoblin;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;

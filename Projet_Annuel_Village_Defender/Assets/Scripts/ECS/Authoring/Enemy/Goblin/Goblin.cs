@@ -1,8 +1,8 @@
-﻿﻿using ECS.Components;
-using ECS.Components.Goblin;
+﻿using ECS.Components.Enemy.AgressiveGoblin;
+using ECS.Components.Enemy.SimpleGoblin;
 using UnityEngine;
 
-namespace ECS.Authoring
+namespace ECS.Authoring.Enemy.Goblin
 {
     public class Goblin : MonoBehaviour
     {
@@ -18,7 +18,7 @@ namespace ECS.Authoring
         public override void Bake(Goblin authoring)
         {
             var entity = GetEntity(Unity.Entities.TransformUsageFlags.Dynamic);
-            AddComponent(entity, new ECS.Components.GoblinRiseRate
+            AddComponent(entity, new GoblinRiseRate
             {
                 Value = authoring.riseRate,
                 TargetHeight = authoring.targetHeight

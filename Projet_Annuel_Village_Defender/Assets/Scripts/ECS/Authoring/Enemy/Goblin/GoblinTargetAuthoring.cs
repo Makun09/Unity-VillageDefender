@@ -1,19 +1,19 @@
-﻿using ECS.Authorings.Enemy.Goblin;
+﻿using ECS.Components.Enemy.AgressiveGoblin;
 using Unity.Entities;
 using UnityEngine;
 
-namespace ECS.Authorings.Enemy.Goblin
+namespace ECS.Authoring.Enemy.Goblin
 {
     public class GoblinTargetAuthoring : MonoBehaviour
     {
-        private void Start()
+    }
+
+    public class GoblinTargetBaker : Baker<GoblinTargetAuthoring>
+    {
+        public override void Bake(GoblinTargetAuthoring authoring)
         {
-            var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-            var entity = entityManager.CreateEntity();
-            entityManager.AddComponentData(entity, new GoblinTargetPosition
-            {
-                Value = transform.position
-            });
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+            AddComponent<GoblinTargetTag>(entity);
         }
     }
 }
