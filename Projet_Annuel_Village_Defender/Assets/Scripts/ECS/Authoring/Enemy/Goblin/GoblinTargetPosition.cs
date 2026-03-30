@@ -1,7 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
 
-namespace ECS.Authorings.Enemy.Goblin
+namespace ECS.Authoring.Enemy.Goblin
 {
     public struct GoblinTargetPosition : IComponentData
     {

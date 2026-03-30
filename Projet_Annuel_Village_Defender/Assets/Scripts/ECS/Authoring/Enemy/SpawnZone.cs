@@ -1,10 +1,10 @@
-﻿using ECS.Components;
+﻿using ECS.Components.Enemy.SimpleGoblin;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
-namespace ECS.Authoring
+namespace ECS.Authoring.Enemy
 {
     public class SpawnZone : MonoBehaviour
     {
