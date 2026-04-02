@@ -119,6 +119,53 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &186509583
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 186509584}
+  - component: {fileID: 186509585}
+  m_Layer: 0
+  m_Name: TowerProjectileRegistry
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &186509584
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186509583}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 20.600504, y: 2.6179636, z: -9.853759}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &186509585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186509583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 434a202390c146c78de36c3a1babf589, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entries:
+  - typeId: 0
+    projectilePrefab: {fileID: 4347533578133966221, guid: 97840e38e1d70a947a8ab8d48d87682a, type: 3}
 --- !u!1 &1031919926
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,11 +198,11 @@ MonoBehaviour:
   fieldDimensions:
     x: 70
     y: 70
-  numberSpawnPoints: 5
+  numberSpawnPoints: 50
   spawnPrefab: {fileID: 5075769038003374131, guid: 92ba2fdae6b3bc14c894ec9c079518b3, type: 3}
   randomSeed: 454545
   basicGoblinPrefab: {fileID: 8191408512233993261, guid: c4f53c4ba5d210344910b339c823a499, type: 3}
-  goblinSpawnRate: 2
+  goblinSpawnRate: 0.2
 --- !u!4 &1031919928
 Transform:
   m_ObjectHideFlags: 0
@@ -176,3 +223,4 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1031919928}
+  - {fileID: 186509584}

@@ -18,7 +18,8 @@ public class PlayerMoneyManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            // Avoid destroying sibling scene components (e.g. placement controller) on duplicate.
+            Destroy(this);
             return;
         }
 
@@ -29,6 +30,14 @@ public class PlayerMoneyManager : MonoBehaviour
         {
             _currentMoney = Mathf.Max(0, startingMoney);
             MoneyChanged?.Invoke(_currentMoney);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
         }
     }
 

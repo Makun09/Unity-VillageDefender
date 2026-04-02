@@ -11,6 +11,7 @@ namespace ECS.Authoring.Enemy.Goblin
         public int hasTarget;
         public int canWalk;
         public float targetHeight;
+        public float maxHealth;
     }
     
     public class GoblinBaker : Unity.Entities.Baker<Goblin>
@@ -22,6 +23,10 @@ namespace ECS.Authoring.Enemy.Goblin
             {
                 Value = authoring.riseRate,
                 TargetHeight = authoring.targetHeight
+            });
+            AddComponent(entity, new GoblinHealth
+            {
+                Value = authoring.maxHealth
             });
             if (authoring.hasTarget == 1 || authoring.canWalk == 1)
             {

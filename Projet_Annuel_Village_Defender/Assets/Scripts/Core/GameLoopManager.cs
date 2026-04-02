@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
 using System.Collections; // Nécessaire pour les Coroutines
 
 namespace Core
@@ -14,12 +13,21 @@ namespace Core
         {
             if (Instance != null && Instance != this)
             {
-                Destroy(gameObject);
+                // Keep scene objects (UI/controllers) alive; only remove duplicate manager component.
+                Destroy(this);
                 return;
             }
 
             Instance = this;
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
         }
         
         private void Start()

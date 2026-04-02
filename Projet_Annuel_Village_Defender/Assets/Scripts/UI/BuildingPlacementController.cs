@@ -1,7 +1,7 @@
 ﻿using ECS.Components.Building;
 using ECS.Components.Enemy.AgressiveGoblin;
-using System.Collections.Generic;
 using Player;
+using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -21,6 +21,16 @@ namespace UI
             public int typeId;
             public float maxHealth;
             public int buildCost;
+
+            [Header("Tower")]
+            public bool isTower;
+            public float range;
+            public float damage;
+            public float fireRate;
+            public int fireCount;
+            public float projectileSpeed;
+            public float projectileHitRadius;
+            public bool projectileStraight;
         }
 
         [SerializeField] private Camera mainCamera;
@@ -53,7 +63,7 @@ namespace UI
             if (!SelectBuildingType(optionIndex)) return;
             ActivateBuildingPlacement();
         }
-        
+
         public void ActivateBuildingPlacement()
         {
             if (!TryGetSelectedOption(out _))
@@ -76,7 +86,7 @@ namespace UI
 
             var paid = PlayerMoneyManager.Instance.TrySpend(selectedOption.buildCost);
             if (!paid) return;
-            
+
             CreateBuildingTargetEntity(worldPos, hitNormal, selectedOption);
         }
 
@@ -105,7 +115,7 @@ namespace UI
                 var spawnPosition = new Vector3(position.x, position.y, position.z);
                 Instantiate(selectedOption.prefab, spawnPosition, spawnRotation);
             }
-            
+
             var world = World.DefaultGameObjectInjectionWorld;
             if (world == null || !world.IsCreated) return;
 
@@ -119,9 +129,28 @@ namespace UI
                 MaxHealth = selectedOption.maxHealth
             });
 
-            // Option A: all building types are goblin targets.
             em.AddComponent<GoblinTargetTag>(building);
             em.AddComponent<BuildingTag>(building);
+
+            if (selectedOption.isTower)
+            {
+                em.AddComponentData(building, new TowerAttack
+                {
+                    Range = math.max(0.01f, selectedOption.range),
+                    Damage = math.max(0f, selectedOption.damage),
+                    FireRate = math.max(0.01f, selectedOption.fireRate),
+                    FireCount = math.max(1, selectedOption.fireCount),
+                    ProjectileSpeed = math.max(0.01f, selectedOption.projectileSpeed),
+                    ProjectileHitRadius = math.max(0.01f, selectedOption.projectileHitRadius),
+                    ProjectileStraight = selectedOption.projectileStraight,
+                    ProjectilePrefab = ResolveProjectilePrefab(em, selectedOption.typeId)
+                });
+
+                em.AddComponentData(building, new TowerCoolDown
+                {
+                    TimeLeft = 0f
+                });
+            }
         }
 
         private bool TryGetSelectedOption(out BuildingPlacementOption selectedOption)
@@ -154,6 +183,26 @@ namespace UI
             var surfaceRotation = Quaternion.LookRotation(forward, up);
             var offsetRotation = Quaternion.Euler(rotationOffsetEuler);
             return surfaceRotation * offsetRotation;
+        }
+
+        private Entity ResolveProjectilePrefab(EntityManager em, int typeId)
+        {
+            using var query = em.CreateEntityQuery(
+                ComponentType.ReadOnly<ECS.Authoring.Building.TowerProjectileRegistryTag>(),
+                ComponentType.ReadOnly<ECS.Authoring.Building.TowerProjectilePrefabByType>());
+
+            if (query.IsEmptyIgnoreFilter) return Entity.Null;
+
+            var registryEntity = query.GetSingletonEntity();
+            var buffer = em.GetBuffer<ECS.Authoring.Building.TowerProjectilePrefabByType>(registryEntity);
+
+            for (var i = 0; i < buffer.Length; i++)
+            {
+                if (buffer[i].TypeId == typeId)
+                    return buffer[i].ProjectilePrefab;
+            }
+
+            return Entity.Null;
         }
     }
 }
