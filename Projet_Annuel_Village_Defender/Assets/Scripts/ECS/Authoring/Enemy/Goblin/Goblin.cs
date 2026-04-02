@@ -8,6 +8,7 @@ namespace ECS.Authoring.Enemy.Goblin
     {
         public float riseRate;
         public float walkSpeed;
+        public float groundSnapOffset;
         public int hasTarget;
         public int canWalk;
         public float targetHeight;
@@ -32,7 +33,8 @@ namespace ECS.Authoring.Enemy.Goblin
             {
                 AddComponent(entity, new GoblinWalkProperties
                 {
-                    WalkSpeed = authoring.walkSpeed
+                    WalkSpeed = authoring.walkSpeed,
+                    GroundSnapOffset = authoring.groundSnapOffset
                 });
                 SetComponentEnabled<GoblinWalkProperties>(entity, false);
                 AddComponent(entity, new GoblinHeading());

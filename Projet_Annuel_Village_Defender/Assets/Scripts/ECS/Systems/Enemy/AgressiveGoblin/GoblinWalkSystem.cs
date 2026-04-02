@@ -57,16 +57,31 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
         public float StopDistanceSq;
         [ReadOnly] public NativeArray<float3> TargetPositions;
         public EntityCommandBuffer.ParallelWriter ECB;
+
+        private static float HorizontalDistanceSq(float3 from, float3 to)
+        {
+            var delta = to - from;
+            delta.y = 0f;
+            return math.lengthsq(delta);
+        }
+
+        private static float3 ProjectToGoblinHeight(float3 target, float goblinY)
+        {
+            target.y = goblinY;
+            return target;
+        }
         
         private void Execute(GoblinWalkAspect goblin, [EntityIndexInQuery] int sortKey)
         {
-            var nearestTarget = TargetPositions[0];
-            var nearestDistanceSq = math.distancesq(goblin.Position, nearestTarget);
+            var goblinPosition = goblin.Position;
+            var nearestTarget = ProjectToGoblinHeight(TargetPositions[0], goblinPosition.y);
+            var nearestDistanceSq = HorizontalDistanceSq(goblinPosition, nearestTarget);
 
             for (var i = 1; i < TargetPositions.Length; i++)
             {
-                var candidateTarget = TargetPositions[i];
-                var candidateDistanceSq = math.distancesq(goblin.Position, candidateTarget);
+                var candidateTarget = ProjectToGoblinHeight(TargetPositions[i], goblinPosition.y);
+                var candidateDistanceSq = HorizontalDistanceSq(goblinPosition, candidateTarget);
+
                 if (candidateDistanceSq < nearestDistanceSq)
                 {
                     nearestDistanceSq = candidateDistanceSq;
@@ -75,9 +90,8 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
             }
 
             goblin.SetHeading(nearestTarget);
-            
             goblin.Walk(DeltaTime);
-            
+
             if (nearestDistanceSq <= StopDistanceSq)
             {
                 ECB.AddComponent<GoblinReachedTarget>(sortKey, goblin.Entity);

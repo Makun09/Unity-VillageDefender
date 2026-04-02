@@ -22,7 +22,9 @@ namespace ECS.Components.Enemy.AgressiveGoblin
         
         public void Walk(float deltaTime)
         {
-        float3 direction = math.normalizesafe(Heading - _transform.ValueRO.Position);
+            var toTarget = Heading - _transform.ValueRO.Position;
+            toTarget.y = 0f;
+            var direction = math.normalizesafe(toTarget);
             
             if (math.lengthsq(direction) > 0.001f)
             {
