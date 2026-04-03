@@ -19,6 +19,7 @@ namespace ECS.Systems.Building
         {
             state.RequireForUpdate<TowerAttack>();
             state.RequireForUpdate<GoblinHealth>();
+            state.RequireForUpdate<BuildingHealth>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
 
@@ -74,8 +75,11 @@ namespace ECS.Systems.Building
             [EntityIndexInQuery] int sortKey,
             in LocalTransform towerTransform,
             in TowerAttack towerAttack,
+            in BuildingHealth towerHealth,
             ref TowerCoolDown towerCoolDown)
         {
+            if (towerHealth.Value <= 0f) return;
+
             towerCoolDown.TimeLeft -= DeltaTime;
             if (towerCoolDown.TimeLeft > 0f) return;
 
