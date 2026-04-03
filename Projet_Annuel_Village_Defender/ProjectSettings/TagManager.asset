@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CanPlace
   - PlayerUI
+  - Ground
   layers:
   - Default
   - TransparentFX

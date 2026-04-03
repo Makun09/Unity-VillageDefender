@@ -1,20 +1,20 @@
-﻿using ECS.Components.Enemy.SimpleGoblin;
+﻿using ECS.Components.Building;
+using ECS.Systems.Enemy.AgressiveGoblin;
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
 
-namespace ECS.Systems.Enemy.SimpleGoblin
+namespace ECS.Systems.Building
 {
     [BurstCompile]
     [UpdateInGroup(typeof(SimulationSystemGroup))]
-
-    public partial struct GoblinDeathSystem : ISystem
+    [UpdateAfter(typeof(GoblinAttackTowerSystem))]
+    [UpdateBefore(typeof(TowerFireSystem))]
+    public partial struct BuildingDeathSystem : ISystem
     {
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<GoblinHealth>();
-            state.RequireForUpdate<GoblinBounty>();
+            state.RequireForUpdate<BuildingHealth>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
         }
 
@@ -23,7 +23,7 @@ namespace ECS.Systems.Enemy.SimpleGoblin
         {
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
 
-            state.Dependency = new GoblinDeathJob
+            state.Dependency = new BuildingDeathJob
             {
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter()
             }.ScheduleParallel(state.Dependency);
@@ -31,23 +31,17 @@ namespace ECS.Systems.Enemy.SimpleGoblin
     }
 
     [BurstCompile]
-    public partial struct GoblinDeathJob : IJobEntity
+    public partial struct BuildingDeathJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;
 
-        private void Execute(Entity entity, [EntityIndexInQuery] int sortKey, in GoblinHealth health, in GoblinBounty bounty)
+        private void Execute(Entity entity, [EntityIndexInQuery] int sortKey, in BuildingHealth health)
         {
-            if (health.Value <= 0)
+            if (health.Value <= 0f)
             {
-                var rewardEntity = ECB.CreateEntity(sortKey);
-                ECB.AddComponent(sortKey, rewardEntity, new ECS.Components.Enemy.SimpleGoblin.GoblinDeathRewardEvent
-                {
-                    Value = math.max(0, bounty.Value)
-                });
                 ECB.DestroyEntity(sortKey, entity);
             }
         }
     }
-
-
 }
+

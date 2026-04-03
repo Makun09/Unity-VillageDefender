@@ -8,10 +8,17 @@ namespace ECS.Authoring.Enemy.Goblin
     {
         public float riseRate;
         public float walkSpeed;
+        public float groundSnapOffset;
+        public float gravityAcceleration = 25f;
+        public float maxFallSpeed = 30f;
         public int hasTarget;
         public int canWalk;
         public float targetHeight;
         public float maxHealth;
+        public int deathReward = 10;
+        public float towerDamage = 5f;
+        public float towerAttackRange = 1.2f;
+        public float towerAttackInterval = 1f;
     }
     
     public class GoblinBaker : Unity.Entities.Baker<Goblin>
@@ -28,15 +35,38 @@ namespace ECS.Authoring.Enemy.Goblin
             {
                 Value = authoring.maxHealth
             });
+            AddComponent(entity, new GoblinBounty
+            {
+                Value = Mathf.Max(0, authoring.deathReward)
+            });
             if (authoring.hasTarget == 1 || authoring.canWalk == 1)
             {
                 AddComponent(entity, new GoblinWalkProperties
                 {
-                    WalkSpeed = authoring.walkSpeed
+                    WalkSpeed = authoring.walkSpeed,
+                    GroundSnapOffset = authoring.groundSnapOffset
                 });
                 SetComponentEnabled<GoblinWalkProperties>(entity, false);
                 AddComponent(entity, new GoblinHeading());
                 SetComponentEnabled<GoblinHeading>(entity, false);
+                AddComponent(entity, new GoblinGravityState
+                {
+                    VerticalSpeed = 0f,
+                    GravityAcceleration = Mathf.Max(0f, authoring.gravityAcceleration),
+                    MaxFallSpeed = Mathf.Max(0f, authoring.maxFallSpeed)
+                });
+                SetComponentEnabled<GoblinGravityState>(entity, false);
+
+                AddComponent(entity, new GoblinTowerAttack
+                {
+                    Damage = authoring.towerDamage,
+                    Range = authoring.towerAttackRange,
+                    Interval = authoring.towerAttackInterval
+                });
+                AddComponent(entity, new GoblinTowerAttackCooldown
+                {
+                    TimeLeft = 0f
+                });
             }
         }
     }

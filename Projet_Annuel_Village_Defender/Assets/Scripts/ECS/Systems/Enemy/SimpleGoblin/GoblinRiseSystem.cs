@@ -11,11 +11,13 @@ namespace ECS.Systems.Enemy.SimpleGoblin
     public partial struct GoblinRiseSystem : ISystem
     {
         private ComponentLookup<GoblinWalkProperties> _canWalkLookup;
+        private ComponentLookup<GoblinGravityState> _gravityStateLookup;
 
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
             _canWalkLookup = state.GetComponentLookup<GoblinWalkProperties>(true);
+            _gravityStateLookup = state.GetComponentLookup<GoblinGravityState>(true);
         }
 
         public void OnDestroy(ref SystemState state)
@@ -27,11 +29,13 @@ namespace ECS.Systems.Enemy.SimpleGoblin
             var deltaTime = SystemAPI.Time.DeltaTime;
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             _canWalkLookup.Update(ref state);
+            _gravityStateLookup.Update(ref state);
             new GoblinRiseSystemJob
             {
                 DeltaTime = deltaTime,
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter(),
                 CanWalk = _canWalkLookup,
+                GravityStateLookup = _gravityStateLookup,
             }.ScheduleParallel();
         }
     }
@@ -42,6 +46,7 @@ namespace ECS.Systems.Enemy.SimpleGoblin
         public float DeltaTime;
         public EntityCommandBuffer.ParallelWriter ECB;
         [ReadOnly] public ComponentLookup<GoblinWalkProperties> CanWalk;
+        [ReadOnly] public ComponentLookup<GoblinGravityState> GravityStateLookup;
 
         private void Execute(GoblinRiseAspect goblin, [EntityIndexInQuery] int sortKey)
         {
@@ -54,6 +59,14 @@ namespace ECS.Systems.Enemy.SimpleGoblin
                 {
                     ECB.SetComponentEnabled<GoblinWalkProperties>(sortKey, goblin.Entity, true);
                     ECB.SetComponentEnabled<GoblinHeading>(sortKey, goblin.Entity, true);
+
+                    if (GravityStateLookup.HasComponent(goblin.Entity))
+                    {
+                        var gravityState = GravityStateLookup[goblin.Entity];
+                        gravityState.VerticalSpeed = 0f;
+                        ECB.SetComponent(sortKey, goblin.Entity, gravityState);
+                        ECB.SetComponentEnabled<GoblinGravityState>(sortKey, goblin.Entity, true);
+                    }
                 }
                 else
                 {

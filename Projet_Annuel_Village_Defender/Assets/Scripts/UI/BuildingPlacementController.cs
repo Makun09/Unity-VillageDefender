@@ -1,5 +1,6 @@
 ﻿using ECS.Components.Building;
 using ECS.Components.Enemy.AgressiveGoblin;
+using ECS.Presentation;
 using Player;
 using System.Collections.Generic;
 using Unity.Entities;
@@ -109,13 +110,6 @@ namespace UI
 
         private void CreateBuildingTargetEntity(float3 position, Vector3 hitNormal, BuildingPlacementOption selectedOption)
         {
-            if (selectedOption.prefab)
-            {
-                var spawnRotation = ComputePlacementRotation(hitNormal, selectedOption.rotationOffsetEuler);
-                var spawnPosition = new Vector3(position.x, position.y, position.z);
-                Instantiate(selectedOption.prefab, spawnPosition, spawnRotation);
-            }
-
             var world = World.DefaultGameObjectInjectionWorld;
             if (world == null || !world.IsCreated) return;
 
@@ -127,6 +121,11 @@ namespace UI
             {
                 TypeId = selectedOption.typeId,
                 MaxHealth = selectedOption.maxHealth
+            });
+
+            em.AddComponentData(building, new BuildingHealth
+            {
+                Value = selectedOption.maxHealth
             });
 
             em.AddComponent<GoblinTargetTag>(building);
@@ -150,6 +149,21 @@ namespace UI
                 {
                     TimeLeft = 0f
                 });
+            }
+
+            if (selectedOption.prefab)
+            {
+                var spawnRotation = ComputePlacementRotation(hitNormal, selectedOption.rotationOffsetEuler);
+                var spawnPosition = new Vector3(position.x, position.y, position.z);
+                var visualInstance = Instantiate(selectedOption.prefab, spawnPosition, spawnRotation);
+
+                var link = visualInstance.GetComponent<BuildingEntityLink>();
+                if (link == null)
+                {
+                    link = visualInstance.AddComponent<BuildingEntityLink>();
+                }
+
+                link.Bind(building);
             }
         }
 
