@@ -9,6 +9,8 @@ namespace ECS.Authoring.Enemy.Goblin
         public float riseRate;
         public float walkSpeed;
         public float groundSnapOffset;
+        public float gravityAcceleration = 25f;
+        public float maxFallSpeed = 30f;
         public int hasTarget;
         public int canWalk;
         public float targetHeight;
@@ -47,6 +49,13 @@ namespace ECS.Authoring.Enemy.Goblin
                 SetComponentEnabled<GoblinWalkProperties>(entity, false);
                 AddComponent(entity, new GoblinHeading());
                 SetComponentEnabled<GoblinHeading>(entity, false);
+                AddComponent(entity, new GoblinGravityState
+                {
+                    VerticalSpeed = 0f,
+                    GravityAcceleration = Mathf.Max(0f, authoring.gravityAcceleration),
+                    MaxFallSpeed = Mathf.Max(0f, authoring.maxFallSpeed)
+                });
+                SetComponentEnabled<GoblinGravityState>(entity, false);
 
                 AddComponent(entity, new GoblinTowerAttack
                 {
