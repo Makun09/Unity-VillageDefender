@@ -1,4 +1,5 @@
 ﻿using ECS.Components.Enemy.AgressiveGoblin;
+using ECS.Components.Building;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -12,20 +13,28 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
     [UpdateAfter(typeof(SimpleGoblin.GoblinRiseSystem))]
     public partial struct GoblinWalkSystem : ISystem
     {
+        private ComponentLookup<GoblinReachedTarget> _reachedTargetLookup;
+
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<GoblinWalkProperties>();
             state.RequireForUpdate<GoblinTargetTag>();
+            state.RequireForUpdate<BuildingTag>();
             state.RequireForUpdate<EndSimulationEntityCommandBufferSystem.Singleton>();
+            _reachedTargetLookup = state.GetComponentLookup<GoblinReachedTarget>(true);
         }
         
         public void OnUpdate(ref SystemState state)
         {
+            _reachedTargetLookup.Update(ref state);
+
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             var deltaTime = SystemAPI.Time.DeltaTime;
 
             var targetPositions = new NativeList<float3>(Allocator.TempJob);
-            foreach (var targetTransform in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<GoblinTargetTag>())
+            foreach (var targetTransform in SystemAPI.Query<RefRO<LocalTransform>>()
+                         .WithAll<GoblinTargetTag, BuildingTag>()
+                         .WithNone<Prefab, Disabled>())
             {
                 targetPositions.Add(targetTransform.ValueRO.Position);
             }
@@ -41,6 +50,7 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
                 DeltaTime = deltaTime,
                 StopDistanceSq = 0.5f,
                 TargetPositions = targetPositions.AsArray(),
+                ReachedTargetLookup = _reachedTargetLookup,
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter(),
             }.ScheduleParallel(state.Dependency);
 
@@ -50,12 +60,12 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
 
     [BurstCompile]
     [WithAll(typeof(GoblinWalkProperties))]
-    [WithNone(typeof(GoblinReachedTarget))]
     public partial struct GoblinWalkJob : IJobEntity
     {
         public float DeltaTime;
         public float StopDistanceSq;
         [ReadOnly] public NativeArray<float3> TargetPositions;
+        [ReadOnly] public ComponentLookup<GoblinReachedTarget> ReachedTargetLookup;
         public EntityCommandBuffer.ParallelWriter ECB;
 
         private static float HorizontalDistanceSq(float3 from, float3 to)
@@ -89,13 +99,23 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
                 }
             }
 
-            goblin.SetHeading(nearestTarget);
-            goblin.Walk(DeltaTime);
-
+            var hasReachedTargetTag = ReachedTargetLookup.HasComponent(goblin.Entity);
             if (nearestDistanceSq <= StopDistanceSq)
             {
-                ECB.AddComponent<GoblinReachedTarget>(sortKey, goblin.Entity);
+                if (!hasReachedTargetTag)
+                {
+                    ECB.AddComponent<GoblinReachedTarget>(sortKey, goblin.Entity);
+                }
+                return;
             }
+
+            if (hasReachedTargetTag)
+            {
+                ECB.RemoveComponent<GoblinReachedTarget>(sortKey, goblin.Entity);
+            }
+
+            goblin.SetHeading(nearestTarget);
+            goblin.Walk(DeltaTime);
         }
     }
 }
