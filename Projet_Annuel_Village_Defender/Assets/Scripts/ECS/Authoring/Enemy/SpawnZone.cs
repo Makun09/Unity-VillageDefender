@@ -14,6 +14,9 @@ namespace ECS.Authoring.Enemy
         public uint randomSeed;
         public GameObject basicGoblinPrefab;
         public float goblinSpawnRate = 2f;
+        public int baseGoblinsPerWave = 5;
+        public int extraGoblinsPerWave = 5;
+        public float timeBetweenWaves = 20f;
     }
     
     public class SpawnZoneBaker : Baker<SpawnZone>
@@ -28,6 +31,9 @@ namespace ECS.Authoring.Enemy
                 EnemySpawnPrefab = GetEntity(authoring.spawnPrefab, TransformUsageFlags.Dynamic),
                 BasicGoblinPrefab = GetEntity(authoring.basicGoblinPrefab, TransformUsageFlags.Dynamic),
                 GoblinSpawnRate = authoring.goblinSpawnRate,
+                BaseGoblinsPerWave = math.max(1, authoring.baseGoblinsPerWave),
+                ExtraGoblinsPerWave = math.max(0, authoring.extraGoblinsPerWave),
+                TimeBetweenWaves = math.max(0f, authoring.timeBetweenWaves)
             });
             AddComponent(entity, new SpawnZoneRandom
             {
@@ -35,6 +41,15 @@ namespace ECS.Authoring.Enemy
             });
             AddComponent<GoblinSpawnPoint>(entity);
             AddComponent<GoblinSpawnTimer>(entity);
+            AddComponent(entity, new GoblinWaveState
+            {
+                WaveIndex = 1,
+                SpawnedThisWave = 0,
+                TargetThisWave = math.max(1, authoring.baseGoblinsPerWave),
+                SpawnCooldown = 0f,
+                InterWaveCooldown = 0f,
+                WaitingNextWave = 0
+            });
         }
     }
 }

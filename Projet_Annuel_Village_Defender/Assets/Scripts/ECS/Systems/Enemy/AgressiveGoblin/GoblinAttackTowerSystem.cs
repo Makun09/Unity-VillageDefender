@@ -74,6 +74,13 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
         [ReadOnly] public NativeArray<float3> TowerPositions;
         public ComponentLookup<BuildingHealth> BuildingHealthLookup;
 
+        private static float HorizontalDistanceSq(float3 from, float3 to)
+        {
+            var delta = to - from;
+            delta.y = 0f;
+            return math.lengthsq(delta);
+        }
+
         private void Execute(in LocalTransform goblinTransform, in GoblinTowerAttack attack, ref GoblinTowerAttackCooldown cooldown)
         {
             cooldown.TimeLeft = math.max(0f, cooldown.TimeLeft - DeltaTime);
@@ -84,7 +91,7 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
 
             for (var i = 0; i < TowerPositions.Length; i++)
             {
-                var distSq = math.distancesq(goblinTransform.Position, TowerPositions[i]);
+                var distSq = HorizontalDistanceSq(goblinTransform.Position, TowerPositions[i]);
                 if (distSq < nearestDistSq)
                 {
                     nearestDistSq = distSq;
@@ -116,5 +123,4 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
         }
     }
 }
-
 

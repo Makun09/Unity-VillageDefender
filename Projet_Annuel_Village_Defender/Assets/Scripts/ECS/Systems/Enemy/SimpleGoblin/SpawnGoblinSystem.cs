@@ -10,13 +10,20 @@ namespace ECS.Systems.Enemy.SimpleGoblin
     public partial struct SpawnGoblinSystem : ISystem
     {
         private ComponentLookup<GoblinRiseRate> _goblinRiseRateLookup;
+        private EntityQuery _aliveGoblinsQuery;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<SpawnZoneProperties>();
+            state.RequireForUpdate<GoblinWaveState>();
             state.RequireForUpdate<BeginInitializationEntityCommandBufferSystem.Singleton>();
             _goblinRiseRateLookup = state.GetComponentLookup<GoblinRiseRate>(true);
+
+            _aliveGoblinsQuery = new EntityQueryBuilder(Allocator.Temp)
+                .WithAll<GoblinHealth>()
+                .WithNone<Prefab, Disabled>()
+                .Build(ref state);
         }
 
         [BurstCompile]
@@ -24,60 +31,89 @@ namespace ECS.Systems.Enemy.SimpleGoblin
         {
             _goblinRiseRateLookup.Update(ref state);
 
-            var deltaTime = SystemAPI.Time.DeltaTime;
             var spawnZoneEntity = SystemAPI.GetSingletonEntity<SpawnZoneProperties>();
             var spawnZone = SystemAPI.GetAspect<SpawnZoneAspect>(spawnZoneEntity);
-
             if (spawnZone.GoblinSpawnPoints.Length == 0) return;
 
+            var aliveGoblinsCount = _aliveGoblinsQuery.CalculateEntityCount();
+            var deltaTime = SystemAPI.Time.DeltaTime;
             var ecbSingleton = SystemAPI.GetSingleton<BeginInitializationEntityCommandBufferSystem.Singleton>();
-            new SpawnGoblinJob
+            var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
+            foreach (var (spawnZoneProperties, waveState, spawnZoneRandom) in
+                     SystemAPI.Query<RefRO<SpawnZoneProperties>, RefRW<GoblinWaveState>, RefRW<SpawnZoneRandom>>())
             {
-                DeltaTime = deltaTime,
-                ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter(),
-                GoblinSpawnPoints = spawnZone.GoblinSpawnPoints,
-                SpawnZoneEntity = spawnZoneEntity,
-                GoblinRiseRateLookup = _goblinRiseRateLookup
-            }.ScheduleParallel();
-        }
-    }
+                ref var ws = ref waveState.ValueRW;
+                var props = spawnZoneProperties.ValueRO;
 
-    [BurstCompile]
-    public partial struct SpawnGoblinJob : IJobEntity
-    {
-        public float DeltaTime;
-        public EntityCommandBuffer.ParallelWriter ECB;
-        [ReadOnly] public NativeArray<GoblinSpawnData> GoblinSpawnPoints;
-        public Entity SpawnZoneEntity;
-        [ReadOnly] public ComponentLookup<GoblinRiseRate> GoblinRiseRateLookup;
+                if (ws.WaveIndex <= 0)
+                {
+                    ws.WaveIndex = 1;
+                }
 
-        private void Execute(in SpawnZoneProperties spawnZoneProperties, [EntityIndexInQuery] int entityIndexInQuery, RefRW<GoblinSpawnTimer> goblinSpawnTimer, RefRW<SpawnZoneRandom> spawnZoneRandom)
-        {
-            goblinSpawnTimer.ValueRW.Value -= DeltaTime;
-            if (goblinSpawnTimer.ValueRW.Value > 0f) return;
-            if (GoblinSpawnPoints.Length == 0) return;
+                if (ws.TargetThisWave <= 0)
+                {
+                    ws.TargetThisWave = math.max(1, props.BaseGoblinsPerWave + (ws.WaveIndex - 1) * props.ExtraGoblinsPerWave);
+                }
 
-            goblinSpawnTimer.ValueRW.Value = spawnZoneProperties.GoblinSpawnRate;
-            var newGoblin = ECB.Instantiate(entityIndexInQuery, spawnZoneProperties.BasicGoblinPrefab);
+                if (ws.WaitingNextWave == 1)
+                {
+                    ws.InterWaveCooldown -= deltaTime;
+                    if (ws.InterWaveCooldown > 0f)
+                    {
+                        continue;
+                    }
 
-            var spawnPointIndex = spawnZoneRandom.ValueRW.Value.NextInt(0, GoblinSpawnPoints.Length);
-            var spawnData = GoblinSpawnPoints[spawnPointIndex];
+                    ws.WaveIndex += 1;
+                    ws.SpawnedThisWave = 0;
+                    ws.TargetThisWave = math.max(1, props.BaseGoblinsPerWave + (ws.WaveIndex - 1) * props.ExtraGoblinsPerWave);
+                    ws.SpawnCooldown = 0f;
+                    ws.InterWaveCooldown = 0f;
+                    ws.WaitingNextWave = 0;
+                    continue;
+                }
 
-            var newGoblinTransform = new LocalTransform
-            {
-                Position = spawnData.SpawnPosition,
-                Rotation = quaternion.identity,
-                Scale = 1f
-            };
-            ECB.SetComponent(entityIndexInQuery, newGoblin, newGoblinTransform);
+                if (ws.SpawnedThisWave >= ws.TargetThisWave)
+                {
+                    if (aliveGoblinsCount == 0)
+                    {
+                        ws.WaitingNextWave = 1;
+                        ws.InterWaveCooldown = math.max(0f, props.TimeBetweenWaves);
+                    }
 
-            // Read both riseRate and targetHeight from the prefab (baked by GoblinBaker from the Goblin inspector)
-            var prefabRiseRate = GoblinRiseRateLookup[spawnZoneProperties.BasicGoblinPrefab];
-            ECB.SetComponent(entityIndexInQuery, newGoblin, new GoblinRiseRate
-            {
-                Value = prefabRiseRate.Value,
-                TargetHeight = prefabRiseRate.TargetHeight
-            });
+                    continue;
+                }
+
+                ws.SpawnCooldown -= deltaTime;
+                if (ws.SpawnCooldown > 0f)
+                {
+                    continue;
+                }
+
+                var newGoblin = ecb.Instantiate(props.BasicGoblinPrefab);
+
+                var random = spawnZoneRandom.ValueRW.Value;
+                var spawnPointIndex = random.NextInt(0, spawnZone.GoblinSpawnPoints.Length);
+                spawnZoneRandom.ValueRW.Value = random;
+                var spawnData = spawnZone.GoblinSpawnPoints[spawnPointIndex];
+
+                ecb.SetComponent(newGoblin, new LocalTransform
+                {
+                    Position = spawnData.SpawnPosition,
+                    Rotation = quaternion.identity,
+                    Scale = 1f
+                });
+
+                var prefabRiseRate = _goblinRiseRateLookup[props.BasicGoblinPrefab];
+                ecb.SetComponent(newGoblin, new GoblinRiseRate
+                {
+                    Value = prefabRiseRate.Value,
+                    TargetHeight = prefabRiseRate.TargetHeight
+                });
+
+                ws.SpawnedThisWave += 1;
+                ws.SpawnCooldown = math.max(0.01f, props.GoblinSpawnRate);
+            }
         }
     }
 }
