@@ -18,8 +18,8 @@ namespace ECS.Authoring.Building
         public override void Bake(VillageAuthoring authoring)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
-            
             AddComponent<BuildingTag>(entity);
+            AddComponent<VillageTag>(entity);
             AddComponent<GoblinTargetTag>(entity);
             AddComponent(entity, new BuildingHealth
             {

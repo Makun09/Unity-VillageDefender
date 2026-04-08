@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeId: 999
-  maxHealth: 1000
+  maxHealth: 10
 --- !u!65 &2021842784
 BoxCollider:
   m_ObjectHideFlags: 0
