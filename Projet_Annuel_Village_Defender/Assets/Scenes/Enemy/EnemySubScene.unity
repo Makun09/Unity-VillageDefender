@@ -202,8 +202,8 @@ MonoBehaviour:
   spawnPrefab: {fileID: 5075769038003374131, guid: 92ba2fdae6b3bc14c894ec9c079518b3, type: 3}
   randomSeed: 454545
   basicGoblinPrefab: {fileID: 8191408512233993261, guid: c4f53c4ba5d210344910b339c823a499, type: 3}
-  goblinSpawnRate: 0.2
-  baseGoblinsPerWave: 10
+  goblinSpawnRate: 0.001
+  baseGoblinsPerWave: 100
   extraGoblinsPerWave: 10
   timeBetweenWaves: 10
 --- !u!4 &1031919928
