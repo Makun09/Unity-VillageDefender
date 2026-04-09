@@ -18,7 +18,6 @@ namespace UI
         {
             public string label;
             public GameObject prefab;
-            public Vector3 rotationOffsetEuler;
             public int typeId;
             public float maxHealth;
             public int buildCost;
@@ -153,9 +152,8 @@ namespace UI
 
             if (selectedOption.prefab)
             {
-                var spawnRotation = ComputePlacementRotation(hitNormal, selectedOption.rotationOffsetEuler);
                 var spawnPosition = new Vector3(position.x, position.y, position.z);
-                var visualInstance = Instantiate(selectedOption.prefab, spawnPosition, spawnRotation);
+                var visualInstance = Instantiate(selectedOption.prefab, spawnPosition, selectedOption.prefab.transform.rotation);
 
                 var link = visualInstance.GetComponent<BuildingEntityLink>();
                 if (link == null)
@@ -178,26 +176,7 @@ namespace UI
             selectedOption = buildingOptions[_selectedBuildingIndex];
             return true;
         }
-
-        private Quaternion ComputePlacementRotation(Vector3 hitNormal, Vector3 rotationOffsetEuler)
-        {
-            var up = hitNormal.normalized;
-
-            // Keep a stable forward axis on the hit surface using camera heading.
-            var forward = Vector3.ProjectOnPlane(mainCamera.transform.forward, up).normalized;
-            if (forward.sqrMagnitude < 0.0001f)
-            {
-                forward = Vector3.Cross(up, Vector3.right).normalized;
-                if (forward.sqrMagnitude < 0.0001f)
-                {
-                    forward = Vector3.Cross(up, Vector3.forward).normalized;
-                }
-            }
-
-            var surfaceRotation = Quaternion.LookRotation(forward, up);
-            var offsetRotation = Quaternion.Euler(rotationOffsetEuler);
-            return surfaceRotation * offsetRotation;
-        }
+        
 
         private Entity ResolveProjectilePrefab(EntityManager em, int typeId)
         {
