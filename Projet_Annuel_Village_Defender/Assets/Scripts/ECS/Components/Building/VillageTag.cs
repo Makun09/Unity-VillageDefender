@@ -3,8 +3,5 @@ using Unity.Entities;
 
 namespace ECS.Components.Building
 {
-    public struct VillageTag : IComponentData
-    {
-        
-    }
+    public struct VillageTag : IComponentData {}
 }

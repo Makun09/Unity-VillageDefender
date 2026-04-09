@@ -10,7 +10,7 @@ public class IsometricCameraController : MonoBehaviour
     public float minSize = 2f;
     public float maxSize = 15f;
 
-    private InputSystem_Actions _inputs; // Nom de votre asset
+    private InputSystem_Actions _inputs;
     private Vector2 _moveInput;
     private float _rotateInput;
     private float _zoomInput;
@@ -62,7 +62,7 @@ public class IsometricCameraController : MonoBehaviour
 
     private void HandleMovement()
     {
-        // On calcule la direction par rapport à l'orientation actuelle de la caméra
+        
         Vector3 forward = transform.forward;
         Vector3 right = transform.right;
         forward.y = 0; // On reste au sol
@@ -86,7 +86,7 @@ public class IsometricCameraController : MonoBehaviour
         if (!_cam || _zoomInput == 0)
             return;
 
-        // Pour une caméra orthographique
+        
         if (_cam.orthographic)
         {
             _cam.orthographicSize -= (_zoomInput / 120f) * zoomSpeed;

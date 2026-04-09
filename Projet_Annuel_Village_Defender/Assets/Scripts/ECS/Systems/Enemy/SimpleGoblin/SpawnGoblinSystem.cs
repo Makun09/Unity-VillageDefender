@@ -32,8 +32,8 @@ namespace ECS.Systems.Enemy.SimpleGoblin
             _goblinRiseRateLookup.Update(ref state);
 
             var spawnZoneEntity = SystemAPI.GetSingletonEntity<SpawnZoneProperties>();
-            var spawnZone = SystemAPI.GetAspect<SpawnZoneAspect>(spawnZoneEntity);
-            if (spawnZone.GoblinSpawnPoints.Length == 0) return;
+            var spawnPoints = SystemAPI.GetComponentRO<GoblinSpawnPoint>(spawnZoneEntity).ValueRO.Value;
+            if (spawnPoints.Length == 0) return;
 
             var aliveGoblinsCount = _aliveGoblinsQuery.CalculateEntityCount();
             var deltaTime = SystemAPI.Time.DeltaTime;
@@ -93,9 +93,9 @@ namespace ECS.Systems.Enemy.SimpleGoblin
                 var newGoblin = ecb.Instantiate(props.BasicGoblinPrefab);
 
                 var random = spawnZoneRandom.ValueRW.Value;
-                var spawnPointIndex = random.NextInt(0, spawnZone.GoblinSpawnPoints.Length);
+                var spawnPointIndex = random.NextInt(0, spawnPoints.Length);
                 spawnZoneRandom.ValueRW.Value = random;
-                var spawnData = spawnZone.GoblinSpawnPoints[spawnPointIndex];
+                var spawnData = spawnPoints[spawnPointIndex];
 
                 ecb.SetComponent(newGoblin, new LocalTransform
                 {

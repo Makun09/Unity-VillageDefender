@@ -3,6 +3,8 @@ using ECS.Components.Enemy.SimpleGoblin;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace ECS.Systems.Enemy.SimpleGoblin
 {
@@ -48,29 +50,29 @@ namespace ECS.Systems.Enemy.SimpleGoblin
         [ReadOnly] public ComponentLookup<GoblinWalkProperties> CanWalk;
         [ReadOnly] public ComponentLookup<GoblinGravityState> GravityStateLookup;
 
-        private void Execute(GoblinRiseAspect goblin, [EntityIndexInQuery] int sortKey)
+        private void Execute(Entity entity, ref LocalTransform transform, in GoblinRiseRate riseRate, [EntityIndexInQuery] int sortKey)
         {
-            goblin.Rise(DeltaTime);
+            transform.Position += math.up() * riseRate.Value * DeltaTime;
 
-            if (goblin.IsAboveLimit)
+            if (transform.Position.y >= riseRate.TargetHeight)
             {
-                ECB.RemoveComponent<GoblinRiseRate>(sortKey, goblin.Entity);
-                if (CanWalk.HasComponent(goblin.Entity))
+                ECB.RemoveComponent<GoblinRiseRate>(sortKey, entity);
+                if (CanWalk.HasComponent(entity))
                 {
-                    ECB.SetComponentEnabled<GoblinWalkProperties>(sortKey, goblin.Entity, true);
-                    ECB.SetComponentEnabled<GoblinHeading>(sortKey, goblin.Entity, true);
+                    ECB.SetComponentEnabled<GoblinWalkProperties>(sortKey, entity, true);
+                    ECB.SetComponentEnabled<GoblinHeading>(sortKey, entity, true);
 
-                    if (GravityStateLookup.HasComponent(goblin.Entity))
+                    if (GravityStateLookup.HasComponent(entity))
                     {
-                        var gravityState = GravityStateLookup[goblin.Entity];
+                        var gravityState = GravityStateLookup[entity];
                         gravityState.VerticalSpeed = 0f;
-                        ECB.SetComponent(sortKey, goblin.Entity, gravityState);
-                        ECB.SetComponentEnabled<GoblinGravityState>(sortKey, goblin.Entity, true);
+                        ECB.SetComponent(sortKey, entity, gravityState);
+                        ECB.SetComponentEnabled<GoblinGravityState>(sortKey, entity, true);
                     }
                 }
                 else
                 {
-                    ECB.DestroyEntity(sortKey, goblin.Entity);
+                    ECB.DestroyEntity(sortKey, entity);
                 }
             }
         }

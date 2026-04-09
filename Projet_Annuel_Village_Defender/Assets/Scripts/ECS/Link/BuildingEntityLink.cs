@@ -1,7 +1,7 @@
 ﻿using Unity.Entities;
 using UnityEngine;
 
-namespace ECS.Presentation
+namespace ECS.Link
 {
     [DisallowMultipleComponent]
     public sealed class BuildingEntityLink : MonoBehaviour
