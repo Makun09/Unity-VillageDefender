@@ -39,7 +39,6 @@ namespace ECS.Authoring.Enemy
             {
                 Value = Random.CreateFromIndex(authoring.randomSeed),
             });
-            AddComponent<GoblinSpawnPoint>(entity);
             AddComponent<GoblinSpawnTimer>(entity);
             AddComponent(entity, new GoblinWaveState
             {

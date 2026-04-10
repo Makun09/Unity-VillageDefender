@@ -307,7 +307,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -371,7 +371,7 @@ Transform:
   m_GameObject: {fileID: 109661314}
   serializedVersion: 2
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 21.3, y: 34.9, z: -25}
+  m_LocalPosition: {x: 15.4, y: 34.9, z: -28.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -814,7 +814,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 5.000016}
+  m_AnchoredPosition: {x: 0, y: 5.0000153}
   m_SizeDelta: {x: 0, y: 9.999968}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &740188549
@@ -1242,7 +1242,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 2.499971}
+  m_AnchoredPosition: {x: 0, y: 2.4999695}
   m_SizeDelta: {x: 0, y: 5.0000577}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1271771598
@@ -1522,7 +1522,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 296fde616b8f33b4a928abd56d72f9c1, type: 2}
+  - {fileID: 2100000, guid: 44e5553a5b3528b4ba6c9f1e9b34a413, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1636,7 +1636,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 1774192093}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -1697,15 +1697,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5687039252696904753, guid: fc48b442dcf0fc749a70a0125351320a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5687039252696904753, guid: fc48b442dcf0fc749a70a0125351320a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5687039252696904753, guid: fc48b442dcf0fc749a70a0125351320a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -106.9
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 7757982790047565853, guid: fc48b442dcf0fc749a70a0125351320a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1907,16 +1907,16 @@ MonoBehaviour:
   - label: Canon
     prefab: {fileID: 5302641135602077620, guid: c2515163b99108045a3c35216651d104, type: 3}
     typeId: 0
-    maxHealth: 10
+    maxHealth: 100000
     buildCost: 50
     isTower: 1
     range: 20
-    damage: 20
+    damage: 1000
     fireRate: 0.5
     fireCount: 1
     projectileSpeed: 5
     projectileHitRadius: 1
-    projectileStraight: 0
+    projectileStraight: 1
   - label: Tower2
     prefab: {fileID: 4609362430250770533, guid: 87f644675e043354a8906cd8327c9ee2, type: 3}
     typeId: 1

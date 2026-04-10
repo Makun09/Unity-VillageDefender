@@ -131,7 +131,7 @@ MonoBehaviour:
   maxFallSpeed: 30
   hasTarget: 1
   canWalk: 1
-  targetHeight: 5
+  targetHeight: 2
   maxHealth: 40
   deathReward: 10
   towerDamage: 5

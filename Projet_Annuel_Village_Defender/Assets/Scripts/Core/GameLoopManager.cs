@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections; // Nécessaire pour les Coroutines
+using System.Collections;
+// Nécessaire pour les Coroutines
 
 namespace Core
 {
@@ -8,7 +9,7 @@ namespace Core
     {
         public static GameLoopManager Instance { get; private set; }
         [SerializeField] private GameStateSO gameState;
-
+        
         private void Awake()
         {
             if (Instance != null && Instance != this)
@@ -68,7 +69,7 @@ namespace Core
             
             SceneManager.LoadScene(0);
         }
-        
+        //todo une scene persistante et charger les autres scenes en additif
         private void ResetEcsWorld()
         {
             var world = Unity.Entities.World.DefaultGameObjectInjectionWorld;

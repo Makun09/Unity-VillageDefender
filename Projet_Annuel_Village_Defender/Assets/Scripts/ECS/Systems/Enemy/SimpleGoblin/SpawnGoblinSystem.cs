@@ -11,6 +11,7 @@ namespace ECS.Systems.Enemy.SimpleGoblin
     {
         private ComponentLookup<GoblinRiseRate> _goblinRiseRateLookup;
         private EntityQuery _aliveGoblinsQuery;
+        private EntityQuery _spawnPointQuery;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -20,9 +21,11 @@ namespace ECS.Systems.Enemy.SimpleGoblin
             state.RequireForUpdate<BeginInitializationEntityCommandBufferSystem.Singleton>();
             _goblinRiseRateLookup = state.GetComponentLookup<GoblinRiseRate>(true);
 
-            _aliveGoblinsQuery = new EntityQueryBuilder(Allocator.Temp)
+            _aliveGoblinsQuery = new EntityQueryBuilder(Allocator.Persistent)
                 .WithAll<GoblinHealth>()
-                .WithNone<Prefab, Disabled>()
+                .Build(ref state);
+            _spawnPointQuery = new EntityQueryBuilder(Allocator.Persistent)
+                .WithAll<GoblinSpawnData>()
                 .Build(ref state);
         }
 
@@ -32,7 +35,7 @@ namespace ECS.Systems.Enemy.SimpleGoblin
             _goblinRiseRateLookup.Update(ref state);
 
             var spawnZoneEntity = SystemAPI.GetSingletonEntity<SpawnZoneProperties>();
-            var spawnPoints = SystemAPI.GetComponentRO<GoblinSpawnPoint>(spawnZoneEntity).ValueRO.Value;
+            var spawnPoints = _spawnPointQuery.ToComponentDataArray<GoblinSpawnData>(Allocator.Temp);
             if (spawnPoints.Length == 0) return;
 
             var aliveGoblinsCount = _aliveGoblinsQuery.CalculateEntityCount();
@@ -114,6 +117,8 @@ namespace ECS.Systems.Enemy.SimpleGoblin
                 ws.SpawnedThisWave += 1;
                 ws.SpawnCooldown = math.max(0.01f, props.GoblinSpawnRate);
             }
+            
+            spawnPoints.Dispose();
         }
     }
 }

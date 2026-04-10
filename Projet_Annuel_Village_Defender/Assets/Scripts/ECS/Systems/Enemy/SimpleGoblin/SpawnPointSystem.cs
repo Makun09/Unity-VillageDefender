@@ -32,7 +32,6 @@ namespace ECS.Systems.Enemy.SimpleGoblin
             var zoneTransform = SystemAPI.GetComponentRO<LocalTransform>(spawnZoneEntity).ValueRO;
             var props = SystemAPI.GetComponentRO<SpawnZoneProperties>(spawnZoneEntity).ValueRO;
             var random = SystemAPI.GetComponentRW<SpawnZoneRandom>(spawnZoneEntity);
-            var spawnPointsComponent = SystemAPI.GetComponentRW<GoblinSpawnPoint>(spawnZoneEntity);
 
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             var spawnPoints = new NativeList<GoblinSpawnData>(Allocator.Persistent);
@@ -43,15 +42,13 @@ namespace ECS.Systems.Enemy.SimpleGoblin
                 var newSpawnPoint = ecb.Instantiate(props.EnemySpawnPrefab);
                 var newSpawnPointTransform = GetRandomSpawnPointTransform(zoneTransform, props, ref random.ValueRW.Value);
                 ecb.SetComponent(newSpawnPoint, newSpawnPointTransform);
-
-                spawnPoints.Add(new GoblinSpawnData
+                ecb.AddComponent(newSpawnPoint, new GoblinSpawnData
                 {
                     SpawnPosition = newSpawnPointTransform.Position + new float3(0f, -undergroundOffset, 0f),
                     TargetHeight = newSpawnPointTransform.Position.y
                 });
             }
-
-            spawnPointsComponent.ValueRW.Value = spawnPoints.AsArray();
+            
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
