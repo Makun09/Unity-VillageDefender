@@ -81,9 +81,9 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
             return target;
         }
         
-        private void Execute(GoblinWalkAspect goblin, [EntityIndexInQuery] int sortKey)
+        private void Execute(Entity entity, ref LocalTransform transform, ref GoblinHeading heading, in GoblinWalkProperties walk, [EntityIndexInQuery] int sortKey)
         {
-            var goblinPosition = goblin.Position;
+            var goblinPosition = transform.Position;
             var nearestTarget = ProjectToGoblinHeight(TargetPositions[0], goblinPosition.y);
             var nearestDistanceSq = HorizontalDistanceSq(goblinPosition, nearestTarget);
 
@@ -99,23 +99,31 @@ namespace ECS.Systems.Enemy.AgressiveGoblin
                 }
             }
 
-            var hasReachedTargetTag = ReachedTargetLookup.HasComponent(goblin.Entity);
+            var hasReachedTargetTag = ReachedTargetLookup.HasComponent(entity);
             if (nearestDistanceSq <= StopDistanceSq)
             {
                 if (!hasReachedTargetTag)
                 {
-                    ECB.AddComponent<GoblinReachedTarget>(sortKey, goblin.Entity);
+                    ECB.AddComponent<GoblinReachedTarget>(sortKey, entity);
                 }
                 return;
             }
 
             if (hasReachedTargetTag)
             {
-                ECB.RemoveComponent<GoblinReachedTarget>(sortKey, goblin.Entity);
+                ECB.RemoveComponent<GoblinReachedTarget>(sortKey, entity);
             }
 
-            goblin.SetHeading(nearestTarget);
-            goblin.Walk(DeltaTime);
+            heading.Value = nearestTarget;
+
+            var toTarget = heading.Value - transform.Position;
+            toTarget.y = 0f;
+            var direction = math.normalizesafe(toTarget);
+
+            if (math.lengthsq(direction) > 0.001f)
+            {
+                transform.Position += direction * walk.WalkSpeed * DeltaTime;
+            }
         }
     }
 }

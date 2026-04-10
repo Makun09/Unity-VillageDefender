@@ -13,7 +13,6 @@ namespace Core
         {
             if (Instance != null && Instance != this)
             {
-                // Keep scene objects (UI/controllers) alive; only remove duplicate manager component.
                 Destroy(this);
                 return;
             }
@@ -41,7 +40,6 @@ namespace Core
         }
 
         // Coroutine générique pour charger un niveau
-        // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator LoadLevelRoutine(int sceneIndex)
         {
             // Attend une frame pour laisser les systèmes ECS finir leur mise à jour
