@@ -5,8 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - CanPlace
-  - CantPlace
-  - Enemy
+  - PlayerUI
+  - Ground
   layers:
   - Default
   - TransparentFX
@@ -14,7 +14,7 @@ TagManager:
   - Towers
   - Water
   - UI
-  - 
+  - Ground
   - 
   - 
   - 
