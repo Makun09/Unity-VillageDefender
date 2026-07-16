@@ -5,10 +5,19 @@ using UnityEngine;
 
 public class VillageDefeatWatcher : MonoBehaviour
 {
+    [SerializeField] private GameObject defeatPanel;
+    [SerializeField] private GameObject gamePanel;
+
+    
     private EntityQuery _villageQuery;
     private bool _hadVillage;
     private bool _triggered;
 
+    private void Start()
+    {
+        Instantiate(gamePanel);
+        gamePanel.SetActive(true);
+    }
     private void Update()
     {
         if (_triggered) return;
@@ -32,8 +41,12 @@ public class VillageDefeatWatcher : MonoBehaviour
 
         if (!hasVillage)
         {
+            Debug.Log("Défaite !");
             _triggered = true;
-            GameLoopManager.Instance?.ReturnToMenu();
+            gamePanel.SetActive(false);
+            Instantiate(defeatPanel);
+            defeatPanel.SetActive(true);
+            Time.timeScale = 0f; // Optionnel : met le jeu en pause
         }
     }
 }

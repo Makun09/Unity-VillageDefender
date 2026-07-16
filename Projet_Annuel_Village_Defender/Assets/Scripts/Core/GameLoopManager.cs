@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Unity.VisualScripting;
+
 // Nécessaire pour les Coroutines
 
 namespace Core
@@ -41,21 +44,32 @@ namespace Core
         }
 
         // Coroutine générique pour charger un niveau
-        private IEnumerator LoadLevelRoutine(int sceneIndex)
+        private IEnumerator LoadLevelRoutine(int sceneIndex, bool reload = false)
         {
-            // Attend une frame pour laisser les systèmes ECS finir leur mise à jour
             yield return null;
-            
-            gameState.ChangeState(GameState.Playing);
-            
-            ResetEcsWorld();
-            
+    
+            Time.timeScale = 1f;
+    
+            if (reload)
+            {
+                ResetEcsWorld(); // <-- AJOUT : reset aussi au restart, pas seulement au retour menu
+            }
+            else
+            {
+                gameState.ChangeState(GameState.Playing);
+            }
+
             SceneManager.LoadScene(sceneIndex);
         }
         
         public void ReturnToMenu()
         {
             StartCoroutine(ReturnToMenuRoutine());
+        }
+
+        public void RestartGame()
+        {
+            StartCoroutine(LoadLevelRoutine(1, true));
         }
         
         private IEnumerator ReturnToMenuRoutine()
@@ -64,12 +78,13 @@ namespace Core
 
             Time.timeScale = 1f;
             gameState.ChangeState(GameState.MainMenu);
-            
+
             ResetEcsWorld();
-            
+
             SceneManager.LoadScene(0);
         }
-        //todo une scene persistante et charger les autres scenes en additif
+        
+        
         private void ResetEcsWorld()
         {
             var world = Unity.Entities.World.DefaultGameObjectInjectionWorld;
@@ -79,6 +94,35 @@ namespace Core
                 Unity.Entities.DefaultWorldInitialization.Initialize("Default World");
             }
         }
+
+
+        private void Update()
+        {
+            //if (Input.GetKeyDown(KeyCode.Escape))
+            //{
+               // if (gameState.CurrentState == GameState.Playing)
+                   //
+                   // Pause();
+               // else if (gameState.CurrentState == GameState.Paused)
+             //       Resume();
+            //}
+            
+            
+        }
+        
+
+        public void Pause()
+        {
+            Time.timeScale = 0f;
+            gameState.ChangeState(GameState.Paused);
+        }
+
+        public void Resume()
+        {
+            Time.timeScale = 1f;
+            gameState.ChangeState(GameState.Playing);
+        }
+        
         
         public void QuitGame()
         {
