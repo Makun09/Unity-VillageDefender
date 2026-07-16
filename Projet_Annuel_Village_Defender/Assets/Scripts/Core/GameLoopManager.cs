@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Unity.VisualScripting;
+
 // Nécessaire pour les Coroutines
 
 namespace Core
@@ -64,12 +67,13 @@ namespace Core
 
             Time.timeScale = 1f;
             gameState.ChangeState(GameState.MainMenu);
-            
+
             ResetEcsWorld();
-            
+
             SceneManager.LoadScene(0);
         }
-        //todo une scene persistante et charger les autres scenes en additif
+        
+        
         private void ResetEcsWorld()
         {
             var world = Unity.Entities.World.DefaultGameObjectInjectionWorld;
@@ -79,6 +83,32 @@ namespace Core
                 Unity.Entities.DefaultWorldInitialization.Initialize("Default World");
             }
         }
+
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (gameState.CurrentState == GameState.Playing)
+                    Pause();
+                else if (gameState.CurrentState == GameState.Paused)
+                    Resume();
+            }
+        }
+        
+
+        public void Pause()
+        {
+            Time.timeScale = 0f;
+            gameState.ChangeState(GameState.Paused);
+        }
+
+        public void Resume()
+        {
+            Time.timeScale = 1f;
+            gameState.ChangeState(GameState.Playing);
+        }
+        
         
         public void QuitGame()
         {
