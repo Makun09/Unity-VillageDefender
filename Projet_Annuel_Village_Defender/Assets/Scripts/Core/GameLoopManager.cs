@@ -44,21 +44,32 @@ namespace Core
         }
 
         // Coroutine générique pour charger un niveau
-        private IEnumerator LoadLevelRoutine(int sceneIndex)
+        private IEnumerator LoadLevelRoutine(int sceneIndex, bool reload = false)
         {
-            // Attend une frame pour laisser les systèmes ECS finir leur mise à jour
             yield return null;
-            
-            gameState.ChangeState(GameState.Playing);
-            
-            ResetEcsWorld();
-            
+    
+            Time.timeScale = 1f;
+    
+            if (reload)
+            {
+                ResetEcsWorld(); // <-- AJOUT : reset aussi au restart, pas seulement au retour menu
+            }
+            else
+            {
+                gameState.ChangeState(GameState.Playing);
+            }
+
             SceneManager.LoadScene(sceneIndex);
         }
         
         public void ReturnToMenu()
         {
             StartCoroutine(ReturnToMenuRoutine());
+        }
+
+        public void RestartGame()
+        {
+            StartCoroutine(LoadLevelRoutine(1, true));
         }
         
         private IEnumerator ReturnToMenuRoutine()
@@ -87,13 +98,16 @@ namespace Core
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (gameState.CurrentState == GameState.Playing)
-                    Pause();
-                else if (gameState.CurrentState == GameState.Paused)
-                    Resume();
-            }
+            //if (Input.GetKeyDown(KeyCode.Escape))
+            //{
+               // if (gameState.CurrentState == GameState.Playing)
+                   //
+                   // Pause();
+               // else if (gameState.CurrentState == GameState.Paused)
+             //       Resume();
+            //}
+            
+            
         }
         
 
