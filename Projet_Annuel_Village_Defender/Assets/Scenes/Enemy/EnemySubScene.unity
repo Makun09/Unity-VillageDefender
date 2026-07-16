@@ -880,7 +880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeId: 999
-  maxHealth: 1000
+  maxHealth: 10
 --- !u!1 &1031919926
 GameObject:
   m_ObjectHideFlags: 0
