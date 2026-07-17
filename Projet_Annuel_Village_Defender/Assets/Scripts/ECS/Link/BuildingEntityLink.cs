@@ -9,10 +9,17 @@ namespace ECS.Link
         private Entity _entity;
         private bool _isBound;
 
-        public void Bind(Entity entity)
+        /// <summary>The ECS entity this visual object is linked to.</summary>
+        public Entity LinkedEntity => _entity;
+
+        /// <summary>The building type id used to look up upgrade data.</summary>
+        public int TypeId { get; private set; }
+
+        public void Bind(Entity entity, int typeId = 0)
         {
             _entity = entity;
             _isBound = true;
+            TypeId = typeId;
         }
 
         private void LateUpdate()

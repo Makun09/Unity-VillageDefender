@@ -14,7 +14,7 @@ namespace UI
     public class BuildingPlacementController : MonoBehaviour
     {
         [System.Serializable]
-        private struct BuildingPlacementOption
+        public struct BuildingPlacementOption
         {
             public string label;
             public GameObject prefab;
@@ -31,15 +31,42 @@ namespace UI
             public float projectileSpeed;
             public float projectileHitRadius;
             public bool projectileStraight;
+
+            [Header("Niveau 2")]
+            public float level2MaxHealth;
+            public float level2Damage;
+            public float level2FireRate;
+            public int   level2UpgradeCost;
+            public GameObject level2Prefab;
+
+            [Header("Niveau 3")]
+            public float level3MaxHealth;
+            public float level3Damage;
+            public float level3FireRate;
+            public int   level3UpgradeCost;
+            public GameObject level3Prefab;
         }
 
         [SerializeField] private Camera mainCamera;
         [SerializeField] private LayerMask groundMask;
         [SerializeField] private List<BuildingPlacementOption> buildingOptions = new List<BuildingPlacementOption>();
         [SerializeField] private int defaultBuildingIndex;
+        [SerializeField] private float placementCheckRadius = 1.5f;
 
         private bool _placementMode;
         private int _selectedBuildingIndex = -1;
+
+        public bool IsInPlacementMode => _placementMode;
+
+        public bool TryGetOptionByTypeId(int typeId, out BuildingPlacementOption option)
+        {
+            foreach (var opt in buildingOptions)
+            {
+                if (opt.typeId == typeId) { option = opt; return true; }
+            }
+            option = default;
+            return false;
+        }
 
         private void Awake()
         {
@@ -83,11 +110,25 @@ namespace UI
 
             if (!Mouse.current.leftButton.wasPressedThisFrame) return;
             if (!TryGetMouseWorldPosition(out var worldPos, out var hitNormal)) return;
+            if (IsPositionOccupied(worldPos)) return;
 
             var paid = PlayerMoneyManager.Instance.TrySpend(selectedOption.buildCost);
             if (!paid) return;
 
             CreateBuildingTargetEntity(worldPos, hitNormal, selectedOption);
+            _placementMode = false;
+        }
+
+        private bool IsPositionOccupied(float3 position)
+        {
+            var center = new Vector3(position.x, position.y + 0.5f, position.z);
+            var hits = Physics.OverlapSphere(center, placementCheckRadius);
+            foreach (var col in hits)
+            {
+                if (col.GetComponentInParent<BuildingEntityLink>() != null)
+                    return true;
+            }
+            return false;
         }
 
         private bool TryGetMouseWorldPosition(out float3 worldPos, out Vector3 hitNormal)
@@ -148,6 +189,11 @@ namespace UI
                 {
                     TimeLeft = 0f
                 });
+
+                em.AddComponentData(building, new ECS.Components.Building.TowerUpgrade
+                {
+                    Level = 1
+                });
             }
 
             if (selectedOption.prefab)
@@ -161,7 +207,7 @@ namespace UI
                     link = visualInstance.AddComponent<BuildingEntityLink>();
                 }
 
-                link.Bind(building);
+                link.Bind(building, selectedOption.typeId);
             }
         }
 
