@@ -8,6 +8,7 @@ namespace ECS.Components.Building
     /// </summary>
     public struct TowerUpgrade : IComponentData
     {
-        public int Level;
+        public int Level;   // 1 = base, 2, 3 = max upgrade
+        public bool Fused;  // true once this tower has been fused with another
     }
 }

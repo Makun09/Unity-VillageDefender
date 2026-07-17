@@ -45,6 +45,13 @@ namespace UI
             public float level3FireRate;
             public int   level3UpgradeCost;
             public GameObject level3Prefab;
+
+            [Header("Fusion (Niveau 3 max)")]
+            public int   fusionCost;
+            public GameObject fusionPrefab;
+            public float fusionMaxHealth;
+            public float fusionDamage;
+            public float fusionFireRate;
         }
 
         [SerializeField] private Camera mainCamera;

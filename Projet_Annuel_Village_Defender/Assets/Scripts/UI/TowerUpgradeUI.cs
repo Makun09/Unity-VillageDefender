@@ -31,14 +31,28 @@ namespace UI
         [SerializeField] private Button upgradeButton;
         [SerializeField] private TMP_Text upgradeButtonText;
 
+        [Header("Bouton Fusion (dans le panel upgrade)")]
+        [SerializeField] private Button fusionButton;
+        [SerializeField] private TMP_Text fusionCostText;
+
+        [Header("Panel sélection cible fusion")]
+        [SerializeField] private GameObject fusionSelectionPanel;
+        [SerializeField] private TMP_Text fusionInstructionText;
+
         private BuildingEntityLink _selectedLink;
         private BuildingPlacementController.BuildingPlacementOption _selectedOption;
+
+        private bool _fusionMode;
+        private BuildingEntityLink _fusionSourceLink;
+        private BuildingPlacementController.BuildingPlacementOption _fusionSourceOption;
 
         private void Awake()
         {
             if (mainCamera == null) mainCamera = Camera.main;
             if (upgradePanel != null) upgradePanel.SetActive(false);
             if (upgradeButton != null) upgradeButton.onClick.AddListener(OnUpgradeButtonClicked);
+            if (fusionButton != null) { fusionButton.onClick.AddListener(OnFusionButtonClicked); fusionButton.gameObject.SetActive(false); }
+            if (fusionSelectionPanel != null) fusionSelectionPanel.SetActive(false);
         }
 
         private void Update()
@@ -49,18 +63,29 @@ namespace UI
             if (placementController != null && placementController.IsInPlacementMode)
             {
                 if (upgradePanel != null && upgradePanel.activeSelf) HidePanel();
+                if (_fusionMode) CancelFusion();
+                return;
+            }
+
+            // Right-click cancels fusion or closes panel
+            if (Mouse.current.rightButton.wasPressedThisFrame)
+            {
+                if (_fusionMode) CancelFusion();
+                else HidePanel();
+                return;
+            }
+
+            // ── Fusion selection mode ─────────────────────────────────────────
+            if (_fusionMode)
+            {
+                if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+                if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+                TrySelectFusionTarget();
                 return;
             }
 
             // Auto-close if the selected tower was destroyed
             if (_selectedLink == null && upgradePanel != null && upgradePanel.activeSelf)
-            {
-                HidePanel();
-                return;
-            }
-
-            // Close on right-click
-            if (Mouse.current.rightButton.wasPressedThisFrame)
             {
                 HidePanel();
                 return;
@@ -151,13 +176,39 @@ namespace UI
                 damageText.text   = $"Dégâts : {attack.Damage:0.##}  →  {nextDmg:0.##}  <color=#00cc44>(+{dDmg:0.##})</color>";
                 fireRateText.text = $"Tirs/s : {attack.FireRate:0.##}  →  {nextFr:0.##}  <color=#00cc44>(+{dFr:0.##})</color>";
                 costText.text     = $"Coût amélioration : {cost}";
+                if (fusionButton != null) fusionButton.gameObject.SetActive(false);
             }
             else
             {
-                healthText.text   = $"PV : {def.MaxHealth:0}";
-                damageText.text   = $"Dégâts : {attack.Damage:0.##}";
-                fireRateText.text = $"Tirs/s : {attack.FireRate:0.##}";
-                costText.text     = "";
+                bool isFused = em.HasComponent<TowerUpgrade>(_selectedLink.LinkedEntity) &&
+                               em.GetComponentData<TowerUpgrade>(_selectedLink.LinkedEntity).Fused;
+
+                if (!isFused)
+                {
+                    float dHp  = _selectedOption.fusionMaxHealth - def.MaxHealth;
+                    float dDmg = _selectedOption.fusionDamage    - attack.Damage;
+                    float dFr  = _selectedOption.fusionFireRate  - attack.FireRate;
+
+                    healthText.text   = $"PV : {def.MaxHealth:0}  \u2192  {_selectedOption.fusionMaxHealth:0}  <color=#00cc44>(+{dHp:0})</color>";
+                    damageText.text   = $"D\u00e9g\u00e2ts : {attack.Damage:0.##}  \u2192  {_selectedOption.fusionDamage:0.##}  <color=#00cc44>(+{dDmg:0.##})</color>";
+                    fireRateText.text = $"Tirs/s : {attack.FireRate:0.##}  \u2192  {_selectedOption.fusionFireRate:0.##}  <color=#00cc44>(+{dFr:0.##})</color>";
+                    costText.text     = $"Co\u00fbt fusion : {_selectedOption.fusionCost}";
+                }
+                else
+                {
+                    healthText.text   = $"PV : {def.MaxHealth:0}";
+                    damageText.text   = $"D\u00e9g\u00e2ts : {attack.Damage:0.##}";
+                    fireRateText.text = $"Tirs/s : {attack.FireRate:0.##}";
+                    costText.text     = "Tour fusionn\u00e9e";
+                }
+
+                if (fusionButton != null)
+                {
+                    fusionButton.gameObject.SetActive(!isFused);
+                    if (!isFused)
+                        fusionButton.interactable = PlayerMoneyManager.Instance != null &&
+                                                    PlayerMoneyManager.Instance.CurrentMoney >= _selectedOption.fusionCost;
+                }
             }
 
             RefreshUpgradeButton(isMax, cost);
@@ -173,9 +224,14 @@ namespace UI
             var em = world.EntityManager;
             if (!em.Exists(_selectedLink.LinkedEntity)) return;
 
-            var upgrade = em.GetComponentData<TowerUpgrade>(_selectedLink.LinkedEntity);
-            GetNextLevelStats(upgrade.Level, out _, out _, out _, out int cost, out bool isMax);
+            int level = em.HasComponent<TowerUpgrade>(_selectedLink.LinkedEntity)
+                ? em.GetComponentData<TowerUpgrade>(_selectedLink.LinkedEntity).Level : 1;
+            GetNextLevelStats(level, out _, out _, out _, out int cost, out bool isMax);
             RefreshUpgradeButton(isMax, cost);
+
+            if (isMax && fusionButton != null && fusionButton.gameObject.activeSelf)
+                fusionButton.interactable = PlayerMoneyManager.Instance != null &&
+                                            PlayerMoneyManager.Instance.CurrentMoney >= _selectedOption.fusionCost;
         }
 
         private void RefreshUpgradeButton(bool isMax, int cost)
@@ -199,6 +255,7 @@ namespace UI
         {
             _selectedLink = null;
             if (upgradePanel != null) upgradePanel.SetActive(false);
+            if (fusionButton != null) fusionButton.gameObject.SetActive(false);
         }
 
         // ─── Upgrade ──────────────────────────────────────────────────────────────
@@ -290,6 +347,126 @@ namespace UI
                 cost  = 0;
                 isMax = true;
             }
+        }
+
+        // ─── Fusion ───────────────────────────────────────────────────────────────
+
+        private void OnFusionButtonClicked()
+        {
+            if (_selectedLink == null || !_selectedLink) return;
+            if (!PlayerMoneyManager.Instance.TrySpend(_selectedOption.fusionCost)) return;
+
+            _fusionMode = true;
+            _fusionSourceLink   = _selectedLink;
+            _fusionSourceOption = _selectedOption;
+
+            HidePanel();
+            if (fusionSelectionPanel != null) fusionSelectionPanel.SetActive(true);
+            if (fusionInstructionText != null)
+                fusionInstructionText.text = "Cliquez sur une tour niveau 3 d'un autre type pour fusionner";
+        }
+
+        private void TrySelectFusionTarget()
+        {
+            var mousePos = Mouse.current.position.ReadValue();
+            var ray  = mainCamera.ScreenPointToRay(mousePos);
+            var hits = Physics.RaycastAll(ray, 1000f);
+
+            BuildingEntityLink foundLink = null;
+            foreach (var hit in hits)
+            {
+                var link = hit.collider.GetComponentInParent<BuildingEntityLink>();
+                if (link != null && link != _fusionSourceLink) { foundLink = link; break; }
+            }
+
+            // Clicked on nothing or the source itself → cancel fusion
+            if (foundLink == null)
+            {
+                CancelFusion();
+                return;
+            }
+
+            var world = World.DefaultGameObjectInjectionWorld;
+            if (world == null || !world.IsCreated) return;
+            var em = world.EntityManager;
+            if (!em.Exists(foundLink.LinkedEntity)) return;
+
+            if (foundLink.TypeId == _fusionSourceLink.TypeId)
+            {
+                if (fusionInstructionText != null)
+                    fusionInstructionText.text = "M\u00eame type ! Choisissez une tour d'un type diff\u00e9rent.";
+                return;
+            }
+
+            // Target must be level 3
+            var targetUpgrade = em.HasComponent<TowerUpgrade>(foundLink.LinkedEntity)
+                ? em.GetComponentData<TowerUpgrade>(foundLink.LinkedEntity)
+                : new TowerUpgrade { Level = 1 };
+            if (targetUpgrade.Level < 3)
+            {
+                if (fusionInstructionText != null)
+                    fusionInstructionText.text = "Cette tour n'est pas niveau 3 !";
+                return;
+            }
+
+            ExecuteFusion(em, foundLink);
+        }
+
+        private void ExecuteFusion(EntityManager em, BuildingEntityLink targetLink)
+        {
+            if (!em.Exists(_fusionSourceLink.LinkedEntity)) { CancelFusion(); return; }
+
+            // ── Mettre à jour les stats ECS de la tour source ──────────────────
+            var attack = em.GetComponentData<TowerAttack>(_fusionSourceLink.LinkedEntity);
+            attack.Damage   = _fusionSourceOption.fusionDamage;
+            attack.FireRate = _fusionSourceOption.fusionFireRate;
+            em.SetComponentData(_fusionSourceLink.LinkedEntity, attack);
+
+            em.SetComponentData(_fusionSourceLink.LinkedEntity, new BuildingDefinition
+            {
+                TypeId    = _fusionSourceOption.typeId,
+                MaxHealth = _fusionSourceOption.fusionMaxHealth
+            });
+            em.SetComponentData(_fusionSourceLink.LinkedEntity, new BuildingHealth
+            {
+                Value = _fusionSourceOption.fusionMaxHealth
+            });
+            em.SetComponentData(_fusionSourceLink.LinkedEntity, new TowerUpgrade
+            {
+                Level = 4,
+                Fused = true
+            });
+
+            // ── Détruire la tour sacrifiée (ECS → le GO sera détruit au prochain LateUpdate) ──
+            if (em.Exists(targetLink.LinkedEntity))
+                em.DestroyEntity(targetLink.LinkedEntity);
+
+            // ── Remplacer le prefab visuel de la tour source ───────────────────
+            if (_fusionSourceOption.fusionPrefab != null)
+            {
+                var entity = _fusionSourceLink.LinkedEntity;
+                var pos    = _fusionSourceLink.transform.position;
+                var rot    = _fusionSourceOption.fusionPrefab.transform.rotation;
+                var oldGO  = _fusionSourceLink.gameObject;
+                int typeId = _fusionSourceLink.TypeId;
+
+                _fusionSourceLink = null;
+                Destroy(oldGO);
+
+                var newVisual = Instantiate(_fusionSourceOption.fusionPrefab, pos, rot);
+                var newLink   = newVisual.GetComponent<BuildingEntityLink>()
+                             ?? newVisual.AddComponent<BuildingEntityLink>();
+                newLink.Bind(entity, typeId);
+            }
+
+            CancelFusion();
+        }
+
+        private void CancelFusion()
+        {
+            _fusionMode       = false;
+            _fusionSourceLink = null;
+            if (fusionSelectionPanel != null) fusionSelectionPanel.SetActive(false);
         }
     }
 }
