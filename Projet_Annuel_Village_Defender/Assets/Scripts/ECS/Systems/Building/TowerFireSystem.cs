@@ -53,6 +53,7 @@ namespace ECS.Systems.Building
                 DeltaTime = deltaTime,
                 GoblinEntities = goblinEntities.AsArray(),
                 GoblinPositions = goblinPositions.AsArray(),
+                MuzzleLookup = SystemAPI.GetComponentLookup<CannonMuzzlePosition>(true),
                 ECB = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter()
             }.ScheduleParallel(state.Dependency);
 
@@ -68,11 +69,13 @@ namespace ECS.Systems.Building
 
         [ReadOnly] public NativeArray<Entity> GoblinEntities;
         [ReadOnly] public NativeArray<float3> GoblinPositions;
+        [ReadOnly] public ComponentLookup<CannonMuzzlePosition> MuzzleLookup;
 
         public EntityCommandBuffer.ParallelWriter ECB;
 
         private void Execute(
             [EntityIndexInQuery] int sortKey,
+            Entity entity,
             in LocalTransform towerTransform,
             in TowerAttack towerAttack,
             in BuildingHealth towerHealth,
@@ -124,9 +127,13 @@ namespace ECS.Systems.Building
                 usedTargetIndices.Add(nearestIndex);
                 shotsFired++;
 
-                var targetPos = GoblinPositions[nearestIndex];
-                var muzzleDirection = math.normalizesafe(targetPos - towerTransform.Position, new float3(0f, 0f, 1f));
-                var spawnPosition = towerTransform.Position + muzzleDirection * 0.25f;
+                var targetPos      = GoblinPositions[nearestIndex];
+                // Si un CannonOrigin a enregistré la position de la bouche, on l'utilise
+                var spawnOrigin    = MuzzleLookup.TryGetComponent(entity, out var muzzle)
+                    ? muzzle.WorldPosition
+                    : towerTransform.Position;
+                var muzzleDirection = math.normalizesafe(targetPos - spawnOrigin, new float3(0f, 0f, 1f));
+                var spawnPosition  = spawnOrigin + muzzleDirection * 0.25f;
                 var projectileLifetime = math.max(0.25f, (towerAttack.Range + hitRadius) / projectileSpeed);
 
                 Entity projectile;

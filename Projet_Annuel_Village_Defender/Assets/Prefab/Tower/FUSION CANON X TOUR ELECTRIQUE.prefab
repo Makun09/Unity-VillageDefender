@@ -22,7 +22,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: f5d7a8b8ab89a9540b31df99535a7672, type: 2}
     - target: {fileID: -8679921383154817045, guid: 0c7c4e99f3758f64b991145179216e76, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -18.347239
+      value: -8.128736
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c7c4e99f3758f64b991145179216e76, type: 3}
       propertyPath: m_LocalPosition.y
@@ -30,7 +30,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c7c4e99f3758f64b991145179216e76, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -15.680182
+      value: -22.1713
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c7c4e99f3758f64b991145179216e76, type: 3}
       propertyPath: m_LocalRotation.w
@@ -183,7 +183,30 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0c7c4e99f3758f64b991145179216e76, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6355923109481519766}
+    - targetCorrespondingSourceObject: {fileID: -8856038371585704039, guid: 0c7c4e99f3758f64b991145179216e76, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5696244156641218541}
   m_SourcePrefab: {fileID: 100100000, guid: 0c7c4e99f3758f64b991145179216e76, type: 3}
+--- !u!1 &4823872597055747570 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -8856038371585704039, guid: 0c7c4e99f3758f64b991145179216e76, type: 3}
+  m_PrefabInstance: {fileID: 5181636098884373099}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5696244156641218541
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4823872597055747570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa3e583bce93df24189a1309bbf58308, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationAxes: 6
+  rotationSpeed: 360
+  rotationOffset: {x: 0, y: 0, z: -90}
 --- !u!1 &5416061537919252282 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 0c7c4e99f3758f64b991145179216e76, type: 3}

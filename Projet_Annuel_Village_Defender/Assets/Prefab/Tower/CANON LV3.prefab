@@ -614,6 +614,7 @@ GameObject:
   - component: {fileID: 8439455549526442143}
   - component: {fileID: 7248041201674510053}
   - component: {fileID: 4382275434652712855}
+  - component: {fileID: 9188848128409077279}
   m_Layer: 0
   m_Name: Socle Lv3
   m_TagString: Untagged
@@ -690,6 +691,21 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9188848128409077279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3462682315220537728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa3e583bce93df24189a1309bbf58308, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationAxes: 6
+  rotationSpeed: 360
+  rotationOffset: {x: 0, y: 0, z: -90}
 --- !u!1 &3684062413434458197
 GameObject:
   m_ObjectHideFlags: 0
