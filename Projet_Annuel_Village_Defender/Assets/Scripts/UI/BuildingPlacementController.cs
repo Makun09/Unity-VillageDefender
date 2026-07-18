@@ -32,6 +32,10 @@ namespace UI
             public float projectileHitRadius;
             public bool projectileStraight;
 
+            [Header("Tesla (type arc continu)")]
+            [Tooltip("Coche cette case pour créer une tour Tesla au lieu d'une tour à projectiles.")]
+            public bool isTesla;
+
             [Header("Niveau 2")]
             public float level2MaxHealth;
             public float level2Damage;
@@ -196,6 +200,33 @@ namespace UI
                 {
                     TimeLeft = 0f
                 });
+
+                em.AddComponentData(building, new ECS.Components.Building.TowerUpgrade
+                {
+                    Level = 1
+                });
+            }
+
+            if (selectedOption.isTesla)
+            {
+                // Tesla towers deal continuous DPS through an arc — no projectile cooldown.
+                // range   → arc reach
+                // damage  → damage per second per target
+                // fireCount → max simultaneous targets
+                em.AddComponentData(building, new TowerAttack
+                {
+                    Range     = math.max(0.01f, selectedOption.range),
+                    Damage    = math.max(0f,    selectedOption.damage),
+                    FireRate  = 0f,   // unused for Tesla
+                    FireCount = math.max(1, selectedOption.fireCount),
+                    ProjectileSpeed     = 0f,
+                    ProjectileHitRadius = 0f,
+                    ProjectileStraight  = false,
+                    ProjectilePrefab    = Entity.Null
+                });
+
+                em.AddComponentData(building, new ECS.Components.Building.TeslaTag());
+                em.AddBuffer<ECS.Components.Building.TeslaCurrentTarget>(building);
 
                 em.AddComponentData(building, new ECS.Components.Building.TowerUpgrade
                 {
