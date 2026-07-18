@@ -45,6 +45,7 @@ namespace UI
         private bool _fusionMode;
         private BuildingEntityLink _fusionSourceLink;
         private BuildingPlacementController.BuildingPlacementOption _fusionSourceOption;
+        private bool _wasInPlacementMode;
 
         private void Awake()
         {
@@ -64,6 +65,14 @@ namespace UI
             {
                 if (upgradePanel != null && upgradePanel.activeSelf) HidePanel();
                 if (_fusionMode) CancelFusion();
+                _wasInPlacementMode = true;
+                return;
+            }
+
+            // Skip the click on the frame placement just ended (same click that placed the building)
+            if (_wasInPlacementMode)
+            {
+                _wasInPlacementMode = false;
                 return;
             }
 
