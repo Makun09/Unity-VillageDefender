@@ -49,6 +49,7 @@ namespace Core
             yield return null;
     
             Time.timeScale = 1f;
+            
     
             if (reload)
             {
@@ -58,18 +59,21 @@ namespace Core
             {
                 gameState.ChangeState(GameState.Playing);
             }
-
+            ScoreManager.Instance?.StartRun();
             SceneManager.LoadScene(sceneIndex);
         }
         
         public void ReturnToMenu()
         {
+            ScoreManager.Instance?.StopRun();
             StartCoroutine(ReturnToMenuRoutine());
         }
 
         public void RestartGame()
         {
+            ScoreManager.Instance?.StopRun();
             StartCoroutine(LoadLevelRoutine(1, true));
+            
         }
         
         private IEnumerator ReturnToMenuRoutine()
