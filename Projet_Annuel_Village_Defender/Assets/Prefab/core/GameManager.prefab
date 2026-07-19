@@ -1,0 +1,121 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7852129468732497090
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1904917766621479249}
+  - component: {fileID: 2011614387819324499}
+  - component: {fileID: 6054264958157948287}
+  - component: {fileID: 4735635666030416980}
+  - component: {fileID: 5124939107212863254}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1904917766621479249
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7852129468732497090}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 20.600504, y: 2.6179636, z: -9.853759}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2011614387819324499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7852129468732497090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd62a91a04b343cf9b4a89d7664407c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameState: {fileID: 11400000, guid: cec5b09f357436846ad33e5ad9093b87, type: 2}
+--- !u!114 &6054264958157948287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7852129468732497090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 839770334b6343cc8dacc8e349c0a7ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 0}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
+  buildingOptions:
+  - label: Canon
+    prefab: {fileID: 5302641135602077620, guid: c2515163b99108045a3c35216651d104, type: 3}
+    typeId: 0
+    maxHealth: 100000
+    buildCost: 50
+    isTower: 1
+    range: 20
+    damage: 1000
+    fireRate: 0.5
+    fireCount: 1
+    projectileSpeed: 5
+    projectileHitRadius: 1
+    projectileStraight: 1
+  - label: Tower2
+    prefab: {fileID: 4609362430250770533, guid: 87f644675e043354a8906cd8327c9ee2, type: 3}
+    typeId: 1
+    maxHealth: 10
+    buildCost: 10
+    isTower: 1
+    range: 10
+    damage: 5
+    fireRate: 1
+    fireCount: 1
+    projectileSpeed: 3.5
+    projectileHitRadius: 1
+    projectileStraight: 1
+  defaultBuildingIndex: 0
+--- !u!114 &4735635666030416980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7852129468732497090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcda1f9e65204882b5feb28778731902, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingMoney: 250
+--- !u!114 &5124939107212863254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7852129468732497090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ce5c49feb184778b1390eb45e81d582, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defeatPanel: {fileID: 3371331575254568485, guid: df4d15ad3cb1e8142a66fe2dff4647ed, type: 3}
+  gamePanel: {fileID: 5384667575730080471, guid: f1a06c6511fbcc14ca625ff7d13f37ce, type: 3}
