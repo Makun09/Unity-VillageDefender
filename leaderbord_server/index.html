@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Classement — Meilleurs Survivants</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #15120e;
+    --surface: #1f1a14;
+    --surface-alt: #262019;
+    --border: #3a322a;
+    --text: #ede6db;
+    --text-dim: #9c9184;
+    --ember: #e2874a;
+    --ember-dim: #b5652f;
+    --gold: #d4af37;
+    --silver: #c4c4c4;
+    --bronze: #b87333;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 800px 400px at 50% -10%, rgba(226,135,74,0.10), transparent),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 48px 20px 80px;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 40px; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ember);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: clamp(32px, 6vw, 48px);
+    letter-spacing: 0.01em;
+    background: linear-gradient(180deg, #f5ede0, #c9a876);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  .subtitle strong { color: var(--text); font-weight: 500; }
+
+  .reset-info {
+    margin-top: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 100px;
+  }
+
+  .reset-info .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ember);
+    box-shadow: 0 0 8px var(--ember);
+  }
+
+  .search-box {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+
+  .search-box input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+  }
+
+  .search-box input::placeholder { color: var(--text-dim); }
+  .search-box input:focus { outline: none; border-color: var(--ember-dim); }
+
+  .search-box button {
+    background: var(--ember-dim);
+    color: #15120e;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .search-box button:hover { background: var(--ember); }
+
+  #search-result {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: -18px 0 24px;
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 18px;
+  }
+  #search-result.found { color: var(--ember); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  thead th {
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+  }
+
+  thead th:last-child, tbody td:last-child { text-align: right; }
+
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s ease; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-alt); }
+  tbody tr.highlighted { background: rgba(226,135,74,0.12); }
+
+  tbody td {
+    padding: 14px 18px;
+    font-size: 14.5px;
+  }
+
+  .rank {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    color: var(--text-dim);
+    width: 60px;
+  }
+
+  .rank.r1 { color: var(--gold); }
+  .rank.r2 { color: var(--silver); }
+  .rank.r3 { color: var(--bronze); }
+
+  .player-name { font-weight: 500; }
+
+  .time {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--ember);
+    font-weight: 500;
+  }
+
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .pagination button {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    transition: all 0.15s ease;
+  }
+
+  .pagination button:hover:not(:disabled) { border-color: var(--ember-dim); color: var(--ember); }
+  .pagination button:disabled { opacity: 0.3; cursor: default; }
+
+  .pagination .page-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    min-width: 90px;
+    text-align: center;
+  }
+
+  .state-msg {
+    text-align: center;
+    color: var(--text-dim);
+    padding: 60px 20px;
+    font-size: 14px;
+  }
+
+  .state-msg.error { color: #d97b6a; }
+
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--text-dim);
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Classement Hebdomadaire</div>
+      <h1>Meilleurs Survivants</h1>
+      <p class="subtitle">Les <strong>500</strong> temps de survie les plus longs de la semaine</p>
+      <div class="reset-info">
+        <span class="dot"></span>
+        <span id="week-range">—</span>
+      </div>
+    </header>
+
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Cherche ton nom pour trouver ton rang..." />
+      <button onclick="searchPlayer()">Chercher</button>
+    </div>
+    <div id="search-result"></div>
+
+    <div id="content">
+      <div class="state-msg">Chargement du classement...</div>
+    </div>
+
+    <div class="pagination" id="pagination" style="display:none;">
+      <button id="prev-btn" onclick="changePage(-1)">‹</button>
+      <span class="page-label" id="page-label">Page 1</span>
+      <button id="next-btn" onclick="changePage(1)">›</button>
+    </div>
+
+    <footer>Classement remis à zéro chaque lundi à 00:00</footer>
+  </div>
+
+<script>
+  // --- À remplir avec tes infos Supabase (Project Settings > API) ---
+  const SUPABASE_URL = "https://tiucflvthrjcaoipczce.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_R0sm77D2VzYq3YttAYEuXw_LuIIR9Yy";
+  // --------------------------------------------------------------
+
+  const PAGE_SIZE = 10;
+  const MAX_ENTRIES = 500; // 10 * 50 pages
+
+  let allScores = [];
+  let currentPage = 1;
+
+  function getMondayOfCurrentWeek() {
+    const now = new Date();
+    const day = now.getDay(); // 0 = dimanche, 1 = lundi ...
+    const diff = (day === 0 ? -6 : 1) - day; // recule jusqu'au lundi
+    const monday = new Date(now);
+    monday.setDate(now.getDate() + diff);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
+  }
+
+  function formatTime(seconds) {
+    const s = Math.floor(seconds);
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  }
+
+  function formatWeekRange(monday) {
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    const opts = { day: 'numeric', month: 'short' };
+    return `Semaine du ${monday.toLocaleDateString('fr-FR', opts)} au ${sunday.toLocaleDateString('fr-FR', opts)}`;
+  }
+
+  async function loadScores() {
+    const monday = getMondayOfCurrentWeek();
+    document.getElementById('week-range').textContent = formatWeekRange(monday);
+
+    const isoDate = monday.toISOString();
+    const url = `${SUPABASE_URL}/rest/v1/scores?select=player_name,time_seconds,created_at&created_at=gte.${isoDate}&order=time_seconds.desc&limit=${MAX_ENTRIES}`;
+
+    try {
+      const res = await fetch(url, {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`
+        }
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      allScores = await res.json();
+
+      if (allScores.length === 0) {
+        document.getElementById('content').innerHTML = '<div class="state-msg">Aucun score cette semaine. Sois le premier !</div>';
+        return;
+      }
+
+      renderPage(1);
+    } catch (err) {
+      document.getElementById('content').innerHTML =
+        `<div class="state-msg error">Impossible de charger le classement.<br>${err.message}</div>`;
+    }
+  }
+
+  function renderPage(page) {
+    currentPage = page;
+    const totalPages = Math.max(1, Math.ceil(allScores.length / PAGE_SIZE));
+    const start = (page - 1) * PAGE_SIZE;
+    const pageScores = allScores.slice(start, start + PAGE_SIZE);
+
+    let rows = '';
+    pageScores.forEach((entry, i) => {
+      const rank = start + i + 1;
+      const rankClass = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
+      rows += `
+        <tr data-name="${entry.player_name.toLowerCase()}">
+          <td class="rank ${rankClass}">#${rank}</td>
+          <td class="player-name">${escapeHtml(entry.player_name)}</td>
+          <td class="time">${formatTime(entry.time_seconds)}</td>
+        </tr>`;
+    });
+
+    document.getElementById('content').innerHTML = `
+      <table>
+        <thead>
+          <tr><th>Rang</th><th>Joueur</th><th>Temps</th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+
+    document.getElementById('pagination').style.display = 'flex';
+    document.getElementById('page-label').textContent = `Page ${page} / ${totalPages}`;
+    document.getElementById('prev-btn').disabled = page <= 1;
+    document.getElementById('next-btn').disabled = page >= totalPages;
+  }
+
+  function changePage(delta) {
+    const totalPages = Math.max(1, Math.ceil(allScores.length / PAGE_SIZE));
+    const newPage = Math.min(totalPages, Math.max(1, currentPage + delta));
+    renderPage(newPage);
+    document.getElementById('content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function searchPlayer() {
+    const query = document.getElementById('search-input').value.trim().toLowerCase();
+    const resultEl = document.getElementById('search-result');
+
+    if (!query) {
+      resultEl.textContent = '';
+      resultEl.className = '';
+      return;
+    }
+
+    const index = allScores.findIndex(e => e.player_name.toLowerCase() === query);
+
+    if (index === -1) {
+      resultEl.textContent = 'Aucun score trouvé pour ce nom cette semaine.';
+      resultEl.className = '';
+      return;
+    }
+
+    const rank = index + 1;
+    const page = Math.ceil(rank / PAGE_SIZE);
+    resultEl.textContent = `Trouvé : rang #${rank} avec ${formatTime(allScores[index].time_seconds)} (page ${page})`;
+    resultEl.className = 'found';
+    renderPage(page);
+
+    setTimeout(() => {
+      const row = document.querySelector(`tr[data-name="${CSS.escape(query)}"]`);
+      if (row) {
+        row.classList.add('highlighted');
+        row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 50);
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  document.getElementById('search-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') searchPlayer();
+  });
+
+  loadScores();
+</script>
+</body>
+</html>
