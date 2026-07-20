@@ -698,6 +698,10 @@ PrefabInstance:
       propertyPath: pseudoInputField
       value: 
       objectReference: {fileID: 6976237517563879942}
+    - target: {fileID: 7822511404592115592, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
+      propertyPath: leaderboardApiUrl
+      value: http://localhost/Unity-VillageDefender/leaderbord_server/api/leaderboard
+      objectReference: {fileID: 0}
     - target: {fileID: 8329405374678572979, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
       propertyPath: m_Pivot.x
       value: 0
