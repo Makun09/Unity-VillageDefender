@@ -304,7 +304,9 @@ namespace UI
                 TypeId    = _selectedOption.typeId,
                 MaxHealth = newHp
             });
-            em.SetComponentData(_selectedLink.LinkedEntity, new BuildingHealth { Value = newHp });
+            // N'écrase la vie que si la valeur est valide (champs configurés dans l'Inspector)
+            if (newHp > 0f)
+                em.SetComponentData(_selectedLink.LinkedEntity, new BuildingHealth { Value = newHp });
             em.SetComponentData(_selectedLink.LinkedEntity, new TowerUpgrade    { Level = currentLevel + 1 });
 
             // ── Swap visual prefab ─────────────────────────────────────────────
@@ -436,10 +438,12 @@ namespace UI
                 TypeId    = _fusionSourceOption.typeId,
                 MaxHealth = _fusionSourceOption.fusionMaxHealth
             });
-            em.SetComponentData(_fusionSourceLink.LinkedEntity, new BuildingHealth
-            {
-                Value = _fusionSourceOption.fusionMaxHealth
-            });
+            // N'écrase la vie que si la valeur est valide (champ configuré dans l'Inspector)
+            if (_fusionSourceOption.fusionMaxHealth > 0f)
+                em.SetComponentData(_fusionSourceLink.LinkedEntity, new BuildingHealth
+                {
+                    Value = _fusionSourceOption.fusionMaxHealth
+                });
             em.SetComponentData(_fusionSourceLink.LinkedEntity, new TowerUpgrade
             {
                 Level = 4,

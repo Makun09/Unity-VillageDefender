@@ -11,12 +11,11 @@ namespace UI
 
         private void Update()
         {
-            if (ScoreManager.Instance == null)
-            {
-                return;
-            }
-            currentTimeText.text = FormatTime(ScoreManager.Instance.CurrentTime);
-            bestTimeText.text = $"Best: {FormatTime(ScoreManager.Instance.BestTime)}";
+            if (ScoreManager.Instance == null) return;
+            if (currentTimeText != null)
+                currentTimeText.text = FormatTime(ScoreManager.Instance.CurrentTime);
+            if (bestTimeText != null)
+                bestTimeText.text = $"Best: {FormatTime(ScoreManager.Instance.BestTime)}";
         }
 
         private string FormatTime(float seconds)

@@ -662,6 +662,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1659169376}
+    - target: {fileID: 1717622975635056317, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnQuitClicked
+      objectReference: {fileID: 0}
+    - target: {fileID: 1717622975635056317, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UI.MenuButtonBridge, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 3264404918145385085, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -673,14 +681,6 @@ PrefabInstance:
     - target: {fileID: 3264404918145385085, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
       propertyPath: m_AnchorMin.x
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1717622975635056317, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: OnQuitClicked
-      objectReference: {fileID: 0}
-    - target: {fileID: 1717622975635056317, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: UI.MenuButtonBridge, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 5395803294594601331, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -694,6 +694,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: UI.MenuButtonBridge, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 7822511404592115592, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
+      propertyPath: pseudoInputField
+      value: 
+      objectReference: {fileID: 6976237517563879942}
     - target: {fileID: 8329405374678572979, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -775,10 +779,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2769710511728062500, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
+--- !u!114 &6976237517563879942 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4691548361463182169, guid: 9f71c559d969d784d8ed1ad6abbd62c2, type: 3}
+  m_PrefabInstance: {fileID: 6976237517563879941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
