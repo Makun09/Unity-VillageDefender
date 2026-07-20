@@ -11,12 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require __DIR__ . '/db.php';
 
-function getMondayOfCurrentWeekISO(): string
+function getMondayOfCurrentWeekMysql(): string
 {
     $now = new DateTime();
     $dayOfWeek = (int)$now->format('N');
     $monday = (clone $now)->modify('-' . ($dayOfWeek - 1) . ' days')->setTime(0, 0, 0);
-    return $monday->format('Y-m-d\TH:i:s.000\Z');
+    return $monday->format('Y-m-d H:i:s');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $limit = isset($_GET['limit']) ? min((int)$_GET['limit'], 500) : 500;
-    $monday = getMondayOfCurrentWeekISO();
+    $monday = getMondayOfCurrentWeekMysql();
 
     $stmt = $pdo->prepare('
         SELECT player_name, time_seconds, created_at

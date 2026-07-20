@@ -48,13 +48,11 @@ namespace ECS.Visual
         private BuildingEntityLink _link;
         private EntityQuery        _goblinQuery;
         private bool               _queryReady;
+        private World              _queryWorld;
 
         private void OnDestroy()
         {
-            if (_queryReady
-                && World.DefaultGameObjectInjectionWorld != null
-                && World.DefaultGameObjectInjectionWorld.IsCreated)
-                _goblinQuery.Dispose();
+            SafeDisposeGoblinQuery();
         }
 
         private void LateUpdate()
@@ -74,7 +72,13 @@ namespace ECS.Visual
             var root    = _link.transform.position;
             var towerPos = new float3(root.x, root.y, root.z);
 
-            // ── Construction de la query gobelin (une seule fois) ──────────────
+            // Recrée la query si le World ECS a changé (restart/reset).
+            if (_queryReady && _queryWorld != world)
+            {
+                SafeDisposeGoblinQuery();
+            }
+
+            // ── Construction de la query gobelin (une seule fois par World) ────
             if (!_queryReady)
             {
                 _goblinQuery = em.CreateEntityQuery(new EntityQueryDesc
@@ -91,6 +95,7 @@ namespace ECS.Visual
                     }
                 });
                 _queryReady = true;
+                _queryWorld = world;
             }
 
             // ── Même logique que TowerFireJob : gobelin le plus proche en portée ─
@@ -138,6 +143,30 @@ namespace ECS.Visual
                 ((rotationAxes & RotationAxes.X) != 0 ? fullEuler.x : currentEuler.x) + rotationOffset.x,
                 ((rotationAxes & RotationAxes.Y) != 0 ? fullEuler.y : currentEuler.y) + rotationOffset.y,
                 ((rotationAxes & RotationAxes.Z) != 0 ? fullEuler.z : currentEuler.z) + rotationOffset.z);
+        }
+
+        private void SafeDisposeGoblinQuery()
+        {
+            if (!_queryReady) return;
+
+            try
+            {
+                _goblinQuery.Dispose();
+            }
+            catch (InvalidOperationException)
+            {
+                // Peut arriver si le World a deja ete detruit avant ce MonoBehaviour.
+            }
+            catch (NullReferenceException)
+            {
+                // Defensive: evite un crash pendant l'ordre de destruction ECS/MonoBehaviour.
+            }
+            finally
+            {
+                _goblinQuery = default;
+                _queryReady = false;
+                _queryWorld = null;
+            }
         }
     }
 }

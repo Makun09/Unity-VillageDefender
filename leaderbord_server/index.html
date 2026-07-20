@@ -264,10 +264,7 @@
   </div>
 
 <script>
-  // --- À remplir avec tes infos Supabase (Project Settings > API) ---
-  const SUPABASE_URL = "https://tiucflvthrjcaoipczce.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_R0sm77D2VzYq3YttAYEuXw_LuIIR9Yy";
-  // --------------------------------------------------------------
+  const API_URL = './api/scores.php';
 
   const PAGE_SIZE = 10;
   const MAX_ENTRIES = 500; // 10 * 50 pages
@@ -303,16 +300,10 @@
     const monday = getMondayOfCurrentWeek();
     document.getElementById('week-range').textContent = formatWeekRange(monday);
 
-    const isoDate = monday.toISOString();
-    const url = `${SUPABASE_URL}/rest/v1/scores?select=player_name,time_seconds,created_at&created_at=gte.${isoDate}&order=time_seconds.desc&limit=${MAX_ENTRIES}`;
+    const url = `${API_URL}?limit=${MAX_ENTRIES}`;
 
     try {
-      const res = await fetch(url, {
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`
-        }
-      });
+      const res = await fetch(url);
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
