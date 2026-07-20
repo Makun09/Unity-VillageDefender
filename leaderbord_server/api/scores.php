@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $body = json_decode(file_get_contents('php://input'), true);
 
     $timeSeconds = $body['time_seconds'] ?? null;
+    $playerScore = $body['player_score'] ?? null;
     $playerName = $body['player_name'] ?? 'Joueur';
 
     if (!is_numeric($timeSeconds) || $timeSeconds < 0) {
@@ -31,18 +32,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    if (!is_numeric($playerScore) || $playerScore < 0) {
+        $playerScore = (int)round((float)$timeSeconds);
+    }
+
     $safeName = trim((string)$playerName);
     if ($safeName === '') $safeName = 'Joueur';
     if (mb_strlen($safeName) > 20) $safeName = mb_substr($safeName, 0, 20);
 
-    $stmt = $pdo->prepare('INSERT INTO scores (player_name, time_seconds) VALUES (:name, :time)');
-    $stmt->execute(['name' => $safeName, 'time' => (float)$timeSeconds]);
+    $stmt = $pdo->prepare('INSERT INTO scores (player_name, time_seconds, player_score) VALUES (:name, :time, :score)');
+    $stmt->execute(['name' => $safeName, 'time' => (float)$timeSeconds, 'score' => (int)$playerScore]);
 
     http_response_code(201);
     echo json_encode([
         'id' => $pdo->lastInsertId(),
         'player_name' => $safeName,
         'time_seconds' => (float)$timeSeconds,
+        'player_score' => (int)$playerScore,
     ]);
     exit;
 }
@@ -52,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $monday = getMondayOfCurrentWeekMysql();
 
     $stmt = $pdo->prepare('
-        SELECT player_name, time_seconds, created_at
+        SELECT player_name, time_seconds, player_score, created_at
         FROM scores
         WHERE created_at >= :monday
         ORDER BY time_seconds DESC

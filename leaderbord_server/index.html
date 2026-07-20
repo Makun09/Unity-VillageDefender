@@ -335,6 +335,7 @@
         <tr data-name="${entry.player_name.toLowerCase()}">
           <td class="rank ${rankClass}">#${rank}</td>
           <td class="player-name">${escapeHtml(entry.player_name)}</td>
+          <td class="time">${entry.player_score ?? 0}</td>
           <td class="time">${formatTime(entry.time_seconds)}</td>
         </tr>`;
     });
@@ -342,7 +343,7 @@
     document.getElementById('content').innerHTML = `
       <table>
         <thead>
-          <tr><th>Rang</th><th>Joueur</th><th>Temps</th></tr>
+          <tr><th>Rang</th><th>Joueur</th><th>Score</th><th>Temps</th></tr>
         </thead>
         <tbody>${rows}</tbody>
       </table>`;

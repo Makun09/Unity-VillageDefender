@@ -23,6 +23,7 @@ public class VillageDefeatWatcher : MonoBehaviour
     {
         public string player_name;
         public float time_seconds;
+        public int player_score;
     }
 
     private void Start()
@@ -80,7 +81,8 @@ public class VillageDefeatWatcher : MonoBehaviour
         var payload = new ScorePayload
         {
             player_name = string.IsNullOrWhiteSpace(SettingMenu.GetSavedPseudo()) ? "Joueur" : SettingMenu.GetSavedPseudo(),
-            time_seconds = Mathf.Max(0f, timeSeconds)
+            time_seconds = Mathf.Max(0f, timeSeconds),
+            player_score = Mathf.RoundToInt(Mathf.Max(0f, timeSeconds))
         };
 
         var requestBody = JsonUtility.ToJson(payload);

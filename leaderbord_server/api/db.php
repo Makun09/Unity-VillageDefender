@@ -34,8 +34,14 @@ $pdo->exec("
         id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
         player_name VARCHAR(20) NOT NULL,
         time_seconds FLOAT NOT NULL,
+        player_score INT NOT NULL DEFAULT 0,
         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         INDEX idx_scores_time (time_seconds DESC),
         INDEX idx_scores_created_at (created_at)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 ");
+
+$hasPlayerScoreColumn = $pdo->query("SHOW COLUMNS FROM scores LIKE 'player_score'")->fetch();
+if (!$hasPlayerScoreColumn) {
+    $pdo->exec("ALTER TABLE scores ADD COLUMN player_score INT NOT NULL DEFAULT 0 AFTER time_seconds");
+}
