@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using ECS.Components.Building;
 using ECS.Components.Enemy.SimpleGoblin;
@@ -50,6 +51,7 @@ namespace ECS.Visual
         private readonly List<LineRenderer> _linePool = new();
         private EntityQuery _goblinQuery;
         private bool _queryReady;
+        private World _queryWorld;
         private float _time;
 
         private void OnDisable()
@@ -60,8 +62,7 @@ namespace ECS.Visual
 
         private void OnDestroy()
         {
-            if (_queryReady)
-                _goblinQuery.Dispose();
+            SafeDisposeGoblinQuery();
         }
 
         private void LateUpdate()
@@ -75,6 +76,11 @@ namespace ECS.Visual
             var world = World.DefaultGameObjectInjectionWorld;
             if (world == null || !world.IsCreated) return;
             var em = world.EntityManager;
+
+            if (_queryReady && _queryWorld != world)
+            {
+                SafeDisposeGoblinQuery();
+            }
 
             if (!em.Exists(_link.LinkedEntity)) return;
             if (!em.HasComponent<TowerAttack>(_link.LinkedEntity)) return;
@@ -103,6 +109,7 @@ namespace ECS.Visual
                     }
                 });
                 _queryReady = true;
+                _queryWorld = world;
             }
 
             var goblinXforms  = _goblinQuery.ToComponentDataArray<LocalTransform>(Allocator.Temp);
@@ -194,6 +201,30 @@ namespace ECS.Visual
                                                  lineIndex * 47.3f + _time * flickerSpeed * 0.7f) * 2f - 1f;
                 pos += perp * (noise * noiseAmplitude * envelope);
                 lr.SetPosition(s, pos);
+            }
+        }
+
+        private void SafeDisposeGoblinQuery()
+        {
+            if (!_queryReady) return;
+
+            try
+            {
+                _goblinQuery.Dispose();
+            }
+            catch (InvalidOperationException)
+            {
+                // Le World peut deja etre detruit avant ce MonoBehaviour.
+            }
+            catch (NullReferenceException)
+            {
+                // Defensive: evite un crash dans l'ordre de destruction ECS/Unity.
+            }
+            finally
+            {
+                _goblinQuery = default;
+                _queryReady = false;
+                _queryWorld = null;
             }
         }
     }

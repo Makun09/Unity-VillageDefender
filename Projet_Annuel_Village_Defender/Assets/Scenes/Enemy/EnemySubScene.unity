@@ -880,7 +880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   typeId: 999
-  maxHealth: 10
+  maxHealth: 50000
 --- !u!1 &1031919926
 GameObject:
   m_ObjectHideFlags: 0
@@ -918,8 +918,8 @@ MonoBehaviour:
   randomSeed: 454545
   basicGoblinPrefab: {fileID: 8191408512233993261, guid: c4f53c4ba5d210344910b339c823a499, type: 3}
   goblinSpawnRate: 0.001
-  baseGoblinsPerWave: 10
-  extraGoblinsPerWave: 10
+  baseGoblinsPerWave: 1000
+  extraGoblinsPerWave: 1000
   timeBetweenWaves: 10
 --- !u!4 &1031919928
 Transform:
