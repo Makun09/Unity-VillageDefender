@@ -1,3 +1,4 @@
+﻿using Core;
 using ECS.Components.Building;
 using ECS.Link;
 using Player;
@@ -171,7 +172,7 @@ namespace UI
             if (em.HasComponent<TowerUpgrade>(_selectedLink.LinkedEntity))
                 level = em.GetComponentData<TowerUpgrade>(_selectedLink.LinkedEntity).Level;
 
-            titleText.text = $"Tour — Niveau {level}";
+            titleText.text = $"{LocalizationManager.Get("tower.title_prefix")}{level}";
 
             GetNextLevelStats(level, out float nextHp, out float nextDmg, out float nextFr, out int cost, out bool isMax);
 
@@ -181,10 +182,10 @@ namespace UI
                 float dDmg = nextDmg - attack.Damage;
                 float dFr  = nextFr  - attack.FireRate;
 
-                healthText.text   = $"PV : {def.MaxHealth:0}  →  {nextHp:0}  <color=#00cc44>(+{dHp:0})</color>";
-                damageText.text   = $"Dégâts : {attack.Damage:0.##}  →  {nextDmg:0.##}  <color=#00cc44>(+{dDmg:0.##})</color>";
-                fireRateText.text = $"Tirs/s : {attack.FireRate:0.##}  →  {nextFr:0.##}  <color=#00cc44>(+{dFr:0.##})</color>";
-                costText.text     = $"Coût amélioration : {cost}";
+                healthText.text   = $"{LocalizationManager.Get("tower.pv_prefix")}{def.MaxHealth:0}  ->  {nextHp:0}  <color=#00cc44>(+{dHp:0})</color>";
+                damageText.text   = $"{LocalizationManager.Get("tower.degats_prefix")}{attack.Damage:0.##}  ->  {nextDmg:0.##}  <color=#00cc44>(+{dDmg:0.##})</color>";
+                fireRateText.text = $"{LocalizationManager.Get("tower.tirs_prefix")}{attack.FireRate:0.##}  ->  {nextFr:0.##}  <color=#00cc44>(+{dFr:0.##})</color>";
+                costText.text     = $"{LocalizationManager.Get("tower.cout_amelioration_prefix")}{cost}";
                 if (fusionButton != null) fusionButton.gameObject.SetActive(false);
             }
             else
@@ -198,17 +199,17 @@ namespace UI
                     float dDmg = _selectedOption.fusionDamage    - attack.Damage;
                     float dFr  = _selectedOption.fusionFireRate  - attack.FireRate;
 
-                    healthText.text   = $"PV : {def.MaxHealth:0}  \u2192  {_selectedOption.fusionMaxHealth:0}  <color=#00cc44>(+{dHp:0})</color>";
-                    damageText.text   = $"D\u00e9g\u00e2ts : {attack.Damage:0.##}  \u2192  {_selectedOption.fusionDamage:0.##}  <color=#00cc44>(+{dDmg:0.##})</color>";
-                    fireRateText.text = $"Tirs/s : {attack.FireRate:0.##}  \u2192  {_selectedOption.fusionFireRate:0.##}  <color=#00cc44>(+{dFr:0.##})</color>";
-                    costText.text     = $"Co\u00fbt fusion : {_selectedOption.fusionCost}";
+                    healthText.text   = $"{LocalizationManager.Get("tower.pv_prefix")}{def.MaxHealth:0}  ->  {_selectedOption.fusionMaxHealth:0}  <color=#00cc44>(+{dHp:0})</color>";
+                    damageText.text   = $"{LocalizationManager.Get("tower.degats_prefix")}{attack.Damage:0.##}  ->  {_selectedOption.fusionDamage:0.##}  <color=#00cc44>(+{dDmg:0.##})</color>";
+                    fireRateText.text = $"{LocalizationManager.Get("tower.tirs_prefix")}{attack.FireRate:0.##}  ->  {_selectedOption.fusionFireRate:0.##}  <color=#00cc44>(+{dFr:0.##})</color>";
+                    costText.text     = $"{LocalizationManager.Get("tower.cout_fusion_prefix")}{_selectedOption.fusionCost}";
                 }
                 else
                 {
-                    healthText.text   = $"PV : {def.MaxHealth:0}";
-                    damageText.text   = $"D\u00e9g\u00e2ts : {attack.Damage:0.##}";
-                    fireRateText.text = $"Tirs/s : {attack.FireRate:0.##}";
-                    costText.text     = "Tour fusionn\u00e9e";
+                    healthText.text   = $"{LocalizationManager.Get("tower.pv_prefix")}{def.MaxHealth:0}";
+                    damageText.text   = $"{LocalizationManager.Get("tower.degats_prefix")}{attack.Damage:0.##}";
+                    fireRateText.text = $"{LocalizationManager.Get("tower.tirs_prefix")}{attack.FireRate:0.##}";
+                    costText.text     = LocalizationManager.Get("tower.tour_fusionnee");
                 }
 
                 if (fusionButton != null)
@@ -249,14 +250,14 @@ namespace UI
             if (isMax)
             {
                 upgradeButton.interactable = false;
-                if (upgradeButtonText != null) upgradeButtonText.text = "Niveau max";
+                if (upgradeButtonText != null) upgradeButtonText.text = LocalizationManager.Get("tower.niveau_max");
             }
             else
             {
                 bool canAfford = PlayerMoneyManager.Instance != null &&
                                  PlayerMoneyManager.Instance.CurrentMoney >= cost;
                 upgradeButton.interactable = canAfford;
-                if (upgradeButtonText != null) upgradeButtonText.text = "Améliorer";
+                if (upgradeButtonText != null) upgradeButtonText.text = LocalizationManager.Get("tower.ameliorer_button");
             }
         }
 
@@ -374,7 +375,7 @@ namespace UI
             HidePanel();
             if (fusionSelectionPanel != null) fusionSelectionPanel.SetActive(true);
             if (fusionInstructionText != null)
-                fusionInstructionText.text = "Cliquez sur une tour niveau 3 d'un autre type pour fusionner";
+                fusionInstructionText.text = LocalizationManager.Get("tower.fusion_instruction");
         }
 
         private void TrySelectFusionTarget()
@@ -390,7 +391,7 @@ namespace UI
                 if (link != null && link != _fusionSourceLink) { foundLink = link; break; }
             }
 
-            // Clicked on nothing or the source itself → cancel fusion
+            // Clicked on nothing or the source itself -> cancel fusion
             if (foundLink == null)
             {
                 CancelFusion();
@@ -405,7 +406,7 @@ namespace UI
             if (foundLink.TypeId == _fusionSourceLink.TypeId)
             {
                 if (fusionInstructionText != null)
-                    fusionInstructionText.text = "M\u00eame type ! Choisissez une tour d'un type diff\u00e9rent.";
+                    fusionInstructionText.text = LocalizationManager.Get("tower.fusion_same_type");
                 return;
             }
 
@@ -416,7 +417,7 @@ namespace UI
             if (targetUpgrade.Level < 3)
             {
                 if (fusionInstructionText != null)
-                    fusionInstructionText.text = "Cette tour n'est pas niveau 3 !";
+                    fusionInstructionText.text = LocalizationManager.Get("tower.fusion_not_level3");
                 return;
             }
 
@@ -450,7 +451,7 @@ namespace UI
                 Fused = true
             });
 
-            // ── Détruire la tour sacrifiée (ECS → le GO sera détruit au prochain LateUpdate) ──
+            // ── Détruire la tour sacrifiée (ECS -> le GO sera détruit au prochain LateUpdate) ──
             if (em.Exists(targetLink.LinkedEntity))
                 em.DestroyEntity(targetLink.LinkedEntity);
 

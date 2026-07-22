@@ -15,7 +15,7 @@ namespace UI
             if (currentTimeText != null)
                 currentTimeText.text = FormatTime(ScoreManager.Instance.CurrentTime);
             if (bestTimeText != null)
-                bestTimeText.text = $"Best: {FormatTime(ScoreManager.Instance.BestTime)}";
+                bestTimeText.text = $"{LocalizationManager.Get("score.best_prefix")}{FormatTime(ScoreManager.Instance.BestTime)}";
         }
 
         private string FormatTime(float seconds)

@@ -1,4 +1,5 @@
-﻿using Player;
+﻿using Core;
+using Player;
 using TMPro;
 using UnityEngine;
 
@@ -7,9 +8,9 @@ namespace UI
     public class PlayerMoneyUI : MonoBehaviour
     {
         [SerializeField] private TMP_Text moneyText;
-        [SerializeField] private string prefix = "Argent : ";
 
         private bool _isSubscribed;
+        private int _lastAmount;
 
         private void Awake()
         {
@@ -23,6 +24,7 @@ namespace UI
         private void OnEnable()
         {
             TryBind();
+            LocalizationManager.LanguageChanged += Refresh;
         }
 
         private void Update()
@@ -33,6 +35,8 @@ namespace UI
 
         private void OnDisable()
         {
+            LocalizationManager.LanguageChanged -= Refresh;
+
             if (_isSubscribed && PlayerMoneyManager.Instance != null)
             {
                 PlayerMoneyManager.Instance.MoneyChanged -= HandleMoneyChanged;
@@ -51,8 +55,14 @@ namespace UI
 
         private void HandleMoneyChanged(int amount)
         {
+            _lastAmount = amount;
+            Refresh();
+        }
+
+        private void Refresh()
+        {
             if (!moneyText) return;
-            moneyText.text = $"{prefix}{amount}";
+            moneyText.text = $"{LocalizationManager.Get("player.money_prefix")}{_lastAmount}";
         }
     }
 }

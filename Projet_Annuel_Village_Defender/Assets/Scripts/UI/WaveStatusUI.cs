@@ -1,4 +1,5 @@
-﻿using ECS.Components.Enemy.SimpleGoblin;
+﻿using Core;
+using ECS.Components.Enemy.SimpleGoblin;
 using TMPro;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -13,13 +14,7 @@ namespace UI
         [SerializeField] private TMP_Text interWaveTimerText;
         [SerializeField] private TMP_Text remainingGoblinsText;
 
-        [Header("Labels")]
-        [SerializeField] private string currentWavePrefix = "Vague : ";
-        [SerializeField] private string interWavePrefix = "Prochaine vague dans : ";
-        [SerializeField] private string remainingPrefix = "Gobelins restants : ";
-
         [Header("Display")]
-        [SerializeField] private string waitingText = "En cours";
         [SerializeField] private int timerDecimals = 1;
 
         private World _boundWorld;
@@ -52,11 +47,11 @@ namespace UI
             var remainingToKill = waveState.WaitingNextWave == 1 ? 0 : aliveGoblins + remainingNotSpawned;
             var clampedTimer = waveState.WaitingNextWave == 1 ? math.max(0f, waveState.InterWaveCooldown) : 0f;
 
-            SetText(currentWaveText, $"{currentWavePrefix}{math.max(1, waveState.WaveIndex)}");
+            SetText(currentWaveText, $"{LocalizationManager.Get("wave.vague_prefix")}{math.max(1, waveState.WaveIndex)}");
             SetText(interWaveTimerText, waveState.WaitingNextWave == 1
-                ? $"{interWavePrefix}{clampedTimer.ToString($"F{math.max(0, timerDecimals)}")}s"
-                : $"{interWavePrefix}{waitingText}");
-            SetText(remainingGoblinsText, $"{remainingPrefix}{math.max(0, remainingToKill)}");
+                ? $"{LocalizationManager.Get("wave.next_wave_prefix")}{clampedTimer.ToString($"F{math.max(0, timerDecimals)}")}s"
+                : $"{LocalizationManager.Get("wave.next_wave_prefix")}{LocalizationManager.Get("wave.waiting_text")}");
+            SetText(remainingGoblinsText, $"{LocalizationManager.Get("wave.remaining_prefix")}{math.max(0, remainingToKill)}");
         }
 
         private bool TryBindWorldAndQueries()
@@ -90,9 +85,9 @@ namespace UI
 
         private void SetUnavailable()
         {
-            SetText(currentWaveText, $"{currentWavePrefix}-");
-            SetText(interWaveTimerText, $"{interWavePrefix}-");
-            SetText(remainingGoblinsText, $"{remainingPrefix}-");
+            SetText(currentWaveText, $"{LocalizationManager.Get("wave.vague_prefix")}-");
+            SetText(interWaveTimerText, $"{LocalizationManager.Get("wave.next_wave_prefix")}-");
+            SetText(remainingGoblinsText, $"{LocalizationManager.Get("wave.remaining_prefix")}-");
         }
 
         private static void SetText(TMP_Text label, string value)
