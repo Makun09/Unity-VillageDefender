@@ -66,7 +66,7 @@ namespace Core
             ["wave.vague_prefix"] = ("Vague : ", "Wave : "),
             ["wave.next_wave_prefix"] = ("Prochaine vague dans : ", "Next wave in : "),
             ["wave.remaining_prefix"] = ("Gobelins restants : ", "Remaining goblins : "),
-            ["wave.waiting_text"] = ("En cours", "In progress"),
+            ["wave.waiting_text"] = ("Vague en cours", "Wave in progress"),
         };
 
         public static string Get(string key)

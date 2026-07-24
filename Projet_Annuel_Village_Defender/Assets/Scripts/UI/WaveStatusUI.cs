@@ -50,7 +50,7 @@ namespace UI
             SetText(currentWaveText, $"{LocalizationManager.Get("wave.vague_prefix")}{math.max(1, waveState.WaveIndex)}");
             SetText(interWaveTimerText, waveState.WaitingNextWave == 1
                 ? $"{LocalizationManager.Get("wave.next_wave_prefix")}{clampedTimer.ToString($"F{math.max(0, timerDecimals)}")}s"
-                : $"{LocalizationManager.Get("wave.next_wave_prefix")}{LocalizationManager.Get("wave.waiting_text")}");
+                : LocalizationManager.Get("wave.waiting_text"));
             SetText(remainingGoblinsText, $"{LocalizationManager.Get("wave.remaining_prefix")}{math.max(0, remainingToKill)}");
         }
 
